@@ -284,6 +284,17 @@ async function buildSession(initData) {
       : null
   };
 }
+const server = http.createServer(async (req, res) => {
+  cors(res);
+  if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
+
+  const ip = clientIp(req);
+  if (rateLimited(ip)) return send(res, 429, { error: 'rate_limited', message: 'Слишком много запросов' });
+
+  let url;
+  try { url = new URL(req.url, 'http://' + (req.headers.host || 'localhost')); }
+  catch (e) { return send(res, 400, { error: 'bad_url' }); }
+  const route = url.pathname;
 
   /* ---- health ---- */
   if (route === '/api/health') {
