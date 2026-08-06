@@ -1,0 +1,2603 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+
+<head>
+  <!-- skill:chrome -->
+  <style>
+    /* Credit line — bottom-right */
+    .design-ui-credit {
+      position: fixed;
+      bottom: 12px;
+      right: 12px;
+      font: 11px/1 system-ui, sans-serif;
+      color: rgba(128, 128, 128, 0.5);
+      pointer-events: none;
+      z-index: 2147483647;
+      transition: opacity 0.4s ease;
+      user-select: none;
+      letter-spacing: 0.02em;
+    }
+
+    /* Hide chrome on touch devices */
+    @media (hover: none) {
+      .design-ui-credit {
+        display: none;
+      }
+    }
+
+    /* Print fixes */
+    @media print {
+      * {
+        transition: none !important;
+        animation: none !important;
+        box-shadow: none !important;
+      }
+
+      body {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+
+      .design-ui-credit {
+        display: none !important;
+      }
+    }
+  </style>
+  <script>
+    (function () {
+      // Design-ui pages are single compositions, so the whole body is editable.
+      function markEditable() {
+        document.body.classList.add('artifact-editable');
+      }
+
+      // Credit badge with idle-fade. Hover devices only.
+      function initChromeUI() {
+        if (!matchMedia('(hover: hover)').matches) return;
+
+        var credit = document.createElement('div');
+        credit.className = 'design-ui-credit';
+        credit.setAttribute('aria-hidden', 'true');
+        credit.innerHTML = '\u{1F49C} by ClickUp Brain';
+        document.body.appendChild(credit);
+
+        var timer = null;
+        var fade = function (out) { credit.style.opacity = out ? '0' : ''; };
+        fade(true);
+        var show = function () {
+          fade(false);
+          clearTimeout(timer);
+          timer = setTimeout(function () { fade(true); }, 3000);
+        };
+        document.addEventListener('mousemove', show);
+        show();
+      }
+
+      function init() {
+        markEditable();
+        initChromeUI();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+
+  </script>
+  <!-- /skill:chrome -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>GitHub Scout // Private Studio</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+    :root,
+    :root[data-theme="dark"] {
+      --bg: oklch(12% .025 145);
+      --panel: oklch(16% .03 145);
+      --panel2: oklch(20% .035 145);
+      --line: oklch(29% .04 145);
+      --text: oklch(93% .025 145);
+      --muted: oklch(67% .035 145);
+      --green: oklch(82% .2 140);
+      --lime: oklch(88% .17 115);
+      --pink: oklch(76% .16 350);
+      --orange: oklch(80% .16 72);
+      --on-accent: oklch(14% .03 145);
+      --glow: oklch(70% .2 140 / .28);
+      --hex: #0a1410;
+    }
+
+    :root[data-theme="light"] {
+      --bg: oklch(97% .008 145);
+      --panel: oklch(99.5% .003 145);
+      --panel2: oklch(95% .012 145);
+      --line: oklch(88% .018 145);
+      --text: oklch(24% .03 145);
+      --muted: oklch(50% .03 145);
+      --green: oklch(56% .15 145);
+      --lime: oklch(50% .14 130);
+      --pink: oklch(54% .18 350);
+      --orange: oklch(58% .14 62);
+      --on-accent: oklch(99% .004 145);
+      --glow: oklch(56% .15 145 / .2);
+      --hex: #f5f7f4;
+    }
+
+    :root {
+      --sans: 'Space Grotesk', system-ui, sans-serif;
+      --mono: 'IBM Plex Mono', ui-monospace, monospace;
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      --safe-b: env(safe-area-inset-bottom, 0px);
+      --safe-t: env(safe-area-inset-top, 0px);
+      --nav-h: 62px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      transition: background .3s var(--ease), color .3s var(--ease)
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 90% 0%, var(--glow), transparent 26rem), var(--bg);
+      font-weight: 350;
+      -webkit-tap-highlight-color: transparent
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+      text-wrap: balance
+    }
+
+    button,
+    input {
+      font: inherit;
+      color: inherit
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      touch-action: manipulation
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid var(--green);
+      outline-offset: 3px
+    }
+
+    button:active {
+      transform: scale(.97)
+    }
+
+    .app {
+      width: min(100%, 780px);
+      margin: auto;
+      padding: calc(14px + var(--safe-t)) 16px calc(var(--nav-h) + 46px + var(--safe-b))
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2px 0 18px;
+      gap: 10px
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      padding: 0;
+      min-width: 0
+    }
+
+    .brand div {
+      font-size: 14px;
+      white-space: nowrap
+    }
+
+    .mark {
+      width: 28px;
+      height: 28px;
+      flex: none;
+      display: grid;
+      place-items: center;
+      background: var(--green);
+      color: var(--on-accent);
+      transform: rotate(45deg);
+      box-shadow: 0 0 25px var(--glow)
+    }
+
+    .mark span {
+      transform: rotate(-45deg);
+      font: 600 18px var(--mono)
+    }
+
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font: 10px var(--mono);
+      letter-spacing: .13em;
+      margin-top: 3px;
+      font-weight: 400
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--green);
+      font: 10px var(--mono);
+      flex: none
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 4px var(--glow)
+    }
+
+    .clock-top {
+      color: var(--muted);
+      font: 10px var(--mono);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: .06em
+    }
+
+    .term-btn {
+      height: 30px;
+      padding: 0 9px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: transparent;
+      color: var(--muted);
+      font: 600 11px var(--mono);
+      transition: all .15s var(--ease)
+    }
+
+    .term-btn:hover,
+    .term-btn.on {
+      color: var(--on-accent);
+      background: var(--green);
+      border-color: var(--green)
+    }
+
+    .profile {
+      background: transparent;
+      padding: 0
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--green);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font: 11px var(--mono);
+      overflow: hidden
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .intro {
+      padding: 23px 0 20px;
+      border-top: 1px solid var(--line)
+    }
+
+    .eyebrow {
+      color: var(--green);
+      font: 500 11px var(--mono);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-bottom: 10px
+    }
+
+    .intro h1 {
+      font-size: clamp(34px, 8vw, 56px);
+      line-height: .97;
+      letter-spacing: -.065em;
+      max-width: 11ch
+    }
+
+    .intro h1 em {
+      font-style: normal;
+      color: var(--green)
+    }
+
+    .intro p {
+      max-width: 54ch;
+      color: var(--muted);
+      line-height: 1.55;
+      margin-top: 15px;
+      font-size: 14px
+    }
+
+    .action-strip {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr 1fr;
+      gap: 8px;
+      margin: 2px 0 20px
+    }
+
+    .action {
+      min-height: 78px;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 7px;
+      padding: 13px;
+      color: var(--text);
+      transition: transform .2s var(--ease), border-color .2s var(--ease), background .2s var(--ease)
+    }
+
+    .action:hover {
+      transform: translateY(-2px);
+      border-color: var(--green);
+      background: var(--panel2)
+    }
+
+    .action.primary {
+      background: var(--green);
+      color: var(--on-accent);
+      border-color: var(--green)
+    }
+
+    .action.on {
+      border-color: var(--green);
+      background: var(--panel2)
+    }
+
+    .action b {
+      display: block;
+      font-size: 13px;
+      letter-spacing: -.02em
+    }
+
+    .action span {
+      display: block;
+      color: var(--muted);
+      font: 10px/1.4 var(--mono);
+      margin-top: 6px
+    }
+
+    .action.primary span {
+      color: var(--on-accent);
+      opacity: .78
+    }
+
+    .control {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      margin: 8px 0 17px
+    }
+
+    .search {
+      position: relative
+    }
+
+    .search input {
+      width: 100%;
+      height: 48px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      padding: 0 42px;
+      color: var(--text);
+      font: 13px var(--mono)
+    }
+
+    .search input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px var(--glow);
+      outline: none
+    }
+
+    .search input::placeholder {
+      color: var(--muted)
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 14px;
+      color: var(--green);
+      font: 16px var(--mono);
+      pointer-events: none
+    }
+
+    .refresh {
+      min-width: 48px;
+      height: 48px;
+      background: var(--green);
+      color: var(--on-accent);
+      border-radius: 5px;
+      font: 18px var(--mono);
+      transition: transform .25s var(--ease)
+    }
+
+    .refresh:hover {
+      transform: rotate(30deg)
+    }
+
+    .refresh.loading {
+      animation: spin .8s linear infinite
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .hint {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font: 10px var(--mono);
+      margin: -5px 0 16px;
+      flex-wrap: wrap
+    }
+
+    .hint b {
+      color: var(--green);
+      font-weight: 500
+    }
+
+    .hint .warn {
+      color: var(--pink)
+    }
+
+    .filters {
+      display: flex;
+      gap: 7px;
+      overflow: auto;
+      padding-bottom: 4px;
+      margin-bottom: 22px;
+      scrollbar-width: none
+    }
+
+    .filters::-webkit-scrollbar {
+      display: none
+    }
+
+    .filter {
+      white-space: nowrap;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: 11px var(--mono);
+      transition: all .15s var(--ease)
+    }
+
+    .filter:hover,
+    .filter.active {
+      color: var(--on-accent);
+      background: var(--green);
+      border-color: var(--green)
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      margin-bottom: 11px;
+      gap: 10px
+    }
+
+    .section-head h2 {
+      font-size: 18px;
+      letter-spacing: -.03em
+    }
+
+    .head-right {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .head-right span {
+      color: var(--muted);
+      font: 10px var(--mono)
+    }
+
+    .sec-reset {
+      background: transparent;
+      color: var(--green);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font: 10px var(--mono)
+    }
+
+    .sec-reset:hover {
+      border-color: var(--green)
+    }
+
+    .feed {
+      display: grid;
+      gap: 12px
+    }
+
+    .project {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform .25s var(--ease), border-color .25s var(--ease), background .25s var(--ease)
+    }
+
+    .project:hover {
+      transform: translateY(-2px);
+      border-color: var(--green);
+      background: var(--panel2)
+    }
+
+    .project-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 16px 16px 10px;
+      gap: 10px
+    }
+
+    .repo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0
+    }
+
+    .repo .avatar {
+      width: 28px;
+      height: 28px;
+      border-color: var(--line);
+      background: var(--panel2)
+    }
+
+    .repo-name {
+      font: 600 14px var(--mono);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .repo-name small {
+      display: block;
+      color: var(--muted);
+      font: 10px var(--mono);
+      font-weight: 400;
+      margin-top: 3px
+    }
+
+    .star {
+      background: var(--panel2);
+      color: var(--orange);
+      padding: 7px 9px;
+      border-radius: 999px;
+      font: 600 11px var(--mono);
+      white-space: nowrap
+    }
+
+    .project-body {
+      padding: 7px 16px 14px
+    }
+
+    .project-body h3 {
+      margin-bottom: 7px;
+      font-size: 19px;
+      letter-spacing: -.04em
+    }
+
+    .project-body p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      max-width: 64ch
+    }
+
+    .reason {
+      display: inline-block;
+      margin-top: 9px;
+      color: var(--green);
+      font: 10px var(--mono);
+      letter-spacing: .06em
+    }
+
+    .repo-link {
+      color: var(--pink);
+      font: 600 13px var(--mono);
+      display: block;
+      margin: 13px 0 14px;
+      word-break: break-all;
+      text-decoration: none
+    }
+
+    .project-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 11px;
+      border-top: 1px solid var(--line);
+      flex-wrap: wrap
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      color: var(--muted);
+      font: 10px var(--mono);
+      flex-wrap: wrap
+    }
+
+    .language {
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .lang-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--orange)
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+      align-items: center
+    }
+
+    .icon-btn {
+      width: 31px;
+      height: 31px;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      font: 14px var(--mono);
+      transition: all .15s var(--ease)
+    }
+
+    .icon-btn:hover,
+    .icon-btn.saved {
+      color: var(--green);
+      border-color: var(--green);
+      background: var(--panel2)
+    }
+
+    .mini {
+      height: 31px;
+      padding: 0 10px;
+      border-radius: 4px;
+      background: var(--green);
+      color: var(--on-accent);
+      font: 600 10px var(--mono)
+    }
+
+    .empty {
+      padding: 32px 18px;
+      color: var(--muted);
+      font: 12px var(--mono);
+      border: 1px dashed var(--line);
+      text-align: center;
+      border-radius: 8px
+    }
+
+    .empty b {
+      display: block;
+      color: var(--text);
+      font: 600 16px var(--sans);
+      margin-bottom: 8px
+    }
+
+    .empty button {
+      margin-top: 14px;
+      background: var(--green);
+      color: var(--on-accent);
+      border-radius: 4px;
+      padding: 10px 16px;
+      font: 600 11px var(--mono)
+    }
+
+    .skeleton {
+      height: 250px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(90deg, var(--panel), var(--panel2), var(--panel));
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite
+    }
+
+    @keyframes shimmer {
+      to {
+        background-position: -200% 0
+      }
+    }
+
+    .bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: color-mix(in oklab, var(--bg) 94%, transparent);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--line);
+      padding: 10px max(16px, calc((100vw - 748px)/2)) calc(12px + var(--safe-b));
+      z-index: 4
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-around
+    }
+
+    .nav button {
+      position: relative;
+      background: transparent;
+      color: var(--muted);
+      display: grid;
+      gap: 4px;
+      place-items: center;
+      font: 10px var(--mono);
+      min-width: 70px;
+      min-height: 44px
+    }
+
+    .nav button b {
+      font-size: 18px;
+      font-weight: 400
+    }
+
+    .nav button.active {
+      color: var(--green)
+    }
+
+    .count {
+      position: absolute;
+      top: -2px;
+      right: 10px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: var(--pink);
+      color: var(--on-accent);
+      font: 600 9px/16px var(--mono)
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(var(--nav-h) + 20px + var(--safe-b));
+      transform: translate(-50%, 200%);
+      background: var(--green);
+      color: var(--on-accent);
+      padding: 11px 14px;
+      border-radius: 4px;
+      font: 600 11px var(--mono);
+      z-index: 70;
+      transition: transform .3s var(--ease);
+      white-space: nowrap;
+      max-width: 92vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      pointer-events: none
+    }
+
+    .toast.show {
+      transform: translate(-50%, 0)
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: color-mix(in oklab, var(--bg) 82%, transparent);
+      display: none;
+      align-items: end;
+      justify-content: center;
+      z-index: 30;
+      padding: 12px calc(12px + var(--safe-b))
+    }
+
+    .modal.open {
+      display: flex
+    }
+
+    .sheet {
+      width: min(100%, 580px);
+      max-height: 88vh;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px 12px 4px 4px;
+      padding: 21px 18px calc(18px + var(--safe-b));
+      animation: up .35s var(--ease)
+    }
+
+    @keyframes up {
+      from {
+        transform: translateY(25px);
+        opacity: 0
+      }
+    }
+
+    .sheet-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start
+    }
+
+    .sheet h2 {
+      font-size: 22px;
+      letter-spacing: -.04em
+    }
+
+    .sheet p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      margin-top: 8px
+    }
+
+    .x {
+      background: transparent;
+      color: var(--muted);
+      font: 18px var(--mono)
+    }
+
+    .sheet-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px
+    }
+
+    .primary-btn {
+      flex: 1;
+      background: var(--green);
+      color: var(--on-accent);
+      border-radius: 4px;
+      padding: 12px;
+      font-weight: 700
+    }
+
+    .cancel {
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 12px;
+      color: var(--muted);
+      font: 11px var(--mono)
+    }
+
+    .chip-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px
+    }
+
+    .chip {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 12px;
+      font: 11px var(--mono);
+      transition: all .15s var(--ease)
+    }
+
+    .chip.on {
+      background: var(--green);
+      color: var(--on-accent);
+      border-color: var(--green)
+    }
+
+    .list {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px
+    }
+
+    .list button {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 13px;
+      color: var(--text)
+    }
+
+    .list button:hover {
+      border-color: var(--green)
+    }
+
+    .list strong {
+      display: block;
+      font-size: 13px
+    }
+
+    .list span {
+      display: block;
+      color: var(--muted);
+      font: 10px var(--mono);
+      margin-top: 4px
+    }
+
+    .list i {
+      color: var(--green);
+      font-style: normal;
+      font-size: 18px
+    }
+
+    .hist {
+      display: grid;
+      gap: 2px;
+      margin-top: 16px;
+      max-height: 46vh;
+      overflow: auto
+    }
+
+    .hist a {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 2px;
+      border-bottom: 1px solid var(--line);
+      text-decoration: none;
+      color: var(--text)
+    }
+
+    .hist a:last-child {
+      border-bottom: 0
+    }
+
+    .hist strong {
+      font: 600 13px var(--mono);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
+
+    .hist strong small {
+      display: block;
+      color: var(--muted);
+      font: 10px var(--mono);
+      font-weight: 400;
+      margin-top: 3px
+    }
+
+    .hist em {
+      font-style: normal;
+      color: var(--muted);
+      font: 10px var(--mono);
+      font-variant-numeric: tabular-nums;
+      flex: none
+    }
+
+    .note {
+      margin-top: 16px;
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 12px 13px;
+      color: var(--muted);
+      font: 11px/1.5 var(--mono)
+    }
+
+    .share-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 20px
+    }
+
+    .share-options button {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel2);
+      padding: 15px 8px;
+      color: var(--text);
+      font: 11px var(--mono)
+    }
+
+    .share-options button:hover {
+      border-color: var(--green);
+      color: var(--green)
+    }
+
+    @media(max-width:580px) {
+      .action-strip {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .action:first-child {
+        grid-column: 1/-1
+      }
+
+      .action {
+        min-height: 70px
+      }
+    }
+
+    @media(min-width:640px) {
+      .feed {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .project:first-child {
+        grid-column: 1/-1
+      }
+
+      .project:first-child .project-body h3 {
+        font-size: 24px
+      }
+    }
+
+    @media(max-width:520px) {
+
+      .brand small,
+      .clock-top {
+        display: none
+      }
+    }
+
+    @media(max-width:430px) {
+      .status span.auth {
+        display: none
+      }
+    }
+
+    /* ===== BOOT ===== */
+    .boot {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      background: var(--bg);
+      display: grid;
+      place-items: center;
+      padding: calc(20px + var(--safe-t)) 20px calc(20px + var(--safe-b));
+      transition: opacity .45s var(--ease), transform .6s var(--ease)
+    }
+
+    .boot.exit {
+      opacity: 0;
+      transform: scale(1.02);
+      pointer-events: none
+    }
+
+    .grid {
+      position: absolute;
+      inset: 0;
+      opacity: .24;
+      background-image: linear-gradient(var(--glow) 1px, transparent 1px), linear-gradient(90deg, var(--glow) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(ellipse at center, black 0%, transparent 76%);
+      animation: gridMove 20s linear infinite
+    }
+
+    @keyframes gridMove {
+      to {
+        background-position: 44px 44px
+      }
+    }
+
+    .boot-core {
+      position: relative;
+      width: min(100%, 620px);
+      padding: 10px
+    }
+
+    .boot-brand {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 44px
+    }
+
+    .boot-mark {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      background: var(--green);
+      color: var(--on-accent);
+      transform: rotate(45deg);
+      box-shadow: 0 0 48px var(--glow);
+      animation: pulse 2.2s ease-in-out infinite
+    }
+
+    .boot-mark span {
+      transform: rotate(-45deg);
+      font: 600 31px var(--mono)
+    }
+
+    @keyframes pulse {
+      50% {
+        box-shadow: 0 0 75px var(--glow)
+      }
+    }
+
+    .boot-name {
+      font-size: clamp(22px, 5vw, 32px);
+      font-weight: 700;
+      letter-spacing: .04em
+    }
+
+    .boot-name small {
+      display: block;
+      color: var(--muted);
+      font: 11px var(--mono);
+      letter-spacing: .15em;
+      margin-top: 7px
+    }
+
+    .prompt {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--green);
+      font: 13px var(--mono);
+      margin-bottom: 17px
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 16px;
+      background: var(--green);
+      animation: blink .8s steps(1) infinite
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0
+      }
+    }
+
+    .terminal {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 18px 0 20px;
+      min-height: 190px;
+      color: var(--muted);
+      font: 12px/1.8 var(--mono)
+    }
+
+    .line {
+      display: flex;
+      gap: 12px;
+      white-space: nowrap;
+      overflow: hidden
+    }
+
+    .line em {
+      font-style: normal;
+      color: var(--muted);
+      opacity: .7;
+      font-variant-numeric: tabular-nums
+    }
+
+    .line i {
+      font-style: normal;
+      color: var(--green)
+    }
+
+    .line span {
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .line b {
+      margin-left: auto;
+      color: var(--green);
+      font-weight: 500
+    }
+
+    .progress-wrap {
+      margin-top: 26px
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font: 10px var(--mono);
+      letter-spacing: .08em;
+      margin-bottom: 9px
+    }
+
+    .progress-meta strong {
+      color: var(--green);
+      font-weight: 500
+    }
+
+    .progress {
+      height: 6px;
+      background: var(--panel2);
+      border-radius: 999px;
+      overflow: hidden
+    }
+
+    .progress i {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: var(--green);
+      box-shadow: 0 0 18px var(--glow);
+      transition: width .35s var(--ease)
+    }
+
+    .boot-foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--muted);
+      font: 10px var(--mono);
+      margin-top: 22px
+    }
+
+    .boot-clock {
+      font-variant-numeric: tabular-nums;
+      letter-spacing: .1em
+    }
+
+    .skip {
+      position: fixed;
+      right: 18px;
+      bottom: calc(18px + var(--safe-b));
+      background: transparent;
+      color: var(--muted);
+      font: 10px var(--mono);
+      padding: 8px;
+      z-index: 11
+    }
+
+    .boot-hint {
+      margin-top: 9px;
+      color: var(--muted);
+      font: 10px var(--mono);
+      opacity: .75
+    }
+
+    .app-booting .app,
+    .app-booting .bottom {
+      opacity: 0
+    }
+
+    .app-booted .app {
+      animation: appReveal .7s var(--ease) both
+    }
+
+    .app-booted .bottom {
+      animation: appReveal .7s var(--ease) .1s both
+    }
+
+    @keyframes appReveal {
+      from {
+        opacity: 0;
+        transform: translateY(12px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    @media(max-width:500px) {
+      .boot-core {
+        padding: 0
+      }
+
+      .boot-brand {
+        margin-bottom: 32px
+      }
+
+      .boot-mark {
+        width: 48px;
+        height: 48px
+      }
+
+      .boot-mark span {
+        font-size: 26px
+      }
+
+      .boot-foot {
+        display: grid;
+        gap: 6px
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important
+      }
+    }
+
+    /* ===== GATE ===== */
+    .sub-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: var(--bg);
+      display: grid;
+      place-items: center;
+      padding: calc(20px + var(--safe-t)) 20px calc(20px + var(--safe-b));
+      transition: opacity .5s var(--ease), transform .5s var(--ease)
+    }
+
+    .sub-gate[hidden] {
+      display: none
+    }
+
+    .sub-gate.exit {
+      opacity: 0;
+      transform: scale(1.03);
+      pointer-events: none
+    }
+
+    .sub-gate-core {
+      text-align: center;
+      max-width: 420px
+    }
+
+    .sub-gate-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 28px;
+      display: grid;
+      place-items: center;
+      background: var(--green);
+      color: var(--on-accent);
+      transform: rotate(45deg);
+      box-shadow: 0 0 60px var(--glow);
+      animation: pulse 2.2s ease-in-out infinite
+    }
+
+    .sub-gate-icon span {
+      transform: rotate(-45deg);
+      font: 600 36px var(--mono)
+    }
+
+    .sub-gate h2 {
+      font-size: clamp(24px, 5vw, 36px);
+      letter-spacing: -.04em;
+      margin-bottom: 12px
+    }
+
+    .sub-gate h2 em {
+      font-style: normal;
+      color: var(--green)
+    }
+
+    .sub-gate p {
+      color: var(--muted);
+      font: 13px/1.6 var(--mono);
+      margin: 0 auto 28px;
+      max-width: 36ch
+    }
+
+    .sub-gate-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--green);
+      color: var(--on-accent);
+      font: 600 13px var(--mono);
+      padding: 14px 28px;
+      border-radius: 6px;
+      transition: transform .2s var(--ease);
+      text-decoration: none
+    }
+
+    .sub-gate-btn:hover {
+      transform: translateY(-2px)
+    }
+
+    .sub-gate-check {
+      display: block;
+      margin: 16px auto 0;
+      background: transparent;
+      color: var(--muted);
+      font: 11px var(--mono);
+      border: 1px solid var(--line);
+      padding: 10px 20px;
+      border-radius: 4px
+    }
+
+    .sub-gate-check:hover {
+      color: var(--green);
+      border-color: var(--green)
+    }
+
+    .sub-gate-status {
+      margin-top: 14px;
+      font: 10px var(--mono);
+      color: var(--pink);
+      min-height: 16px
+    }
+
+    .sub-gate-note {
+      margin-top: 24px;
+      color: var(--muted);
+      opacity: .7;
+      font: 10px var(--mono);
+      letter-spacing: .06em
+    }
+
+    /* ===== TERMINAL ===== */
+    .hacker-terminal {
+      position: fixed;
+      bottom: calc(var(--nav-h) + 8px + var(--safe-b));
+      left: 50%;
+      transform: translateX(-50%) translateY(140%);
+      width: min(94vw, 600px);
+      background: var(--panel);
+      border: 1px solid var(--green);
+      border-radius: 8px;
+      z-index: 50;
+      transition: transform .35s var(--ease);
+      box-shadow: 0 0 40px var(--glow);
+      visibility: hidden
+    }
+
+    .hacker-terminal.open {
+      transform: translateX(-50%) translateY(0);
+      visibility: visible
+    }
+
+    .hacker-terminal-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      font: 10px var(--mono);
+      color: var(--green)
+    }
+
+    .ht-title {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
+
+    .ht-clock {
+      color: var(--green);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: .08em;
+      padding: 3px 7px;
+      border: 1px solid var(--line);
+      border-radius: 3px
+    }
+
+    .hacker-terminal-dots {
+      display: flex;
+      gap: 6px
+    }
+
+    .hacker-terminal-dots i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      font-style: normal
+    }
+
+    .hacker-terminal-dots i:nth-child(1) {
+      background: var(--pink)
+    }
+
+    .hacker-terminal-dots i:nth-child(2) {
+      background: var(--orange)
+    }
+
+    .hacker-terminal-dots i:nth-child(3) {
+      background: var(--green)
+    }
+
+    .hacker-terminal-body {
+      padding: 12px 14px;
+      height: 200px;
+      overflow-y: auto;
+      font: 11px/1.7 var(--mono);
+      color: var(--muted)
+    }
+
+    .h-line {
+      display: flex;
+      gap: 8px;
+      white-space: pre-wrap;
+      word-break: break-word
+    }
+
+    .h-line em {
+      font-style: normal;
+      color: var(--muted);
+      opacity: .6;
+      flex: none;
+      font-variant-numeric: tabular-nums
+    }
+
+    .h-line i {
+      color: var(--green);
+      font-style: normal;
+      flex: none
+    }
+
+    .h-line.error i,
+    .h-line.error span {
+      color: var(--pink)
+    }
+
+    .hacker-terminal-input {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-top: 1px solid var(--line);
+      color: var(--green);
+      font: 12px var(--mono)
+    }
+
+    .hacker-terminal-input input {
+      flex: 1;
+      min-width: 0;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font: 12px var(--mono);
+      outline: none
+    }
+
+    .ht-status {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 7px 14px 9px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font: 9px var(--mono);
+      letter-spacing: .08em
+    }
+
+    .ht-status b {
+      color: var(--green);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums
+    }
+
+    .matrix-char {
+      position: fixed;
+      color: var(--green);
+      font: 12px var(--mono);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 97;
+      animation: matrixFall linear forwards
+    }
+
+    @keyframes matrixFall {
+      0% {
+        opacity: .8;
+        transform: translateY(0)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(100vh)
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <section class="sub-gate" id="subGate" hidden>
+    <div class="sub-gate-core">
+      <div class="sub-gate-icon"><span>⌁</span></div>
+      <h2>Подпишись на<br><em>канал Scout</em></h2>
+      <p id="gateText">Чтобы пользоваться радаром, нужно быть подписанным на канал. Это бесплатно.</p>
+      <a class="sub-gate-btn" href="https://t.me/scoutgit" target="_blank" rel="noopener" id="subLink">ПОДПИСАТЬСЯ НА
+        КАНАЛ ↗</a>
+      <button class="sub-gate-check" id="subCheck">Я УЖЕ ПОДПИСАН · ПРОВЕРИТЬ</button>
+      <div class="sub-gate-status" id="subStatus"></div>
+      <div class="sub-gate-note">GITHUB SCOUT · PRIVATE RADAR · v3.0</div>
+    </div>
+  </section>
+
+  <section class="boot" id="boot" aria-label="Загрузка GitHub Scout">
+    <div class="grid"></div>
+    <div class="boot-core">
+      <div class="boot-brand">
+        <div class="boot-mark"><span>⌁</span></div>
+        <div class="boot-name">GITHUB SCOUT<small>PRIVATE OPEN-SOURCE RADAR</small></div>
+      </div>
+      <div class="prompt"><span>scout@telegram:~$</span><span id="typed">initializing</span><span class="cursor"></span>
+      </div>
+      <div class="terminal" id="terminal" aria-live="polite"></div>
+      <div class="progress-wrap">
+        <div class="progress-meta"><span>СИНХРОНИЗАЦИЯ ЛЕНТЫ</span><strong id="pct">00%</strong></div>
+        <div class="progress"><i id="bar"></i></div>
+      </div>
+      <div class="boot-foot"><span>ENCRYPTED SESSION</span><span class="boot-clock" id="bootClock">--:--:--</span><span
+          id="bootStatus">поднимаю радар...</span></div>
+      <div class="boot-hint">нажми любую клавишу, чтобы пропустить</div>
+    </div>
+    <button class="skip" id="skip">ПРОПУСТИТЬ ↗</button>
+  </section>
+
+  <main class="app">
+    <header class="top">
+      <button class="brand" id="brandBtn">
+        <span class="mark"><span>⌁</span></span>
+        <div>GITHUB SCOUT<small>TELEGRAM MINI APP / PERSONAL RADAR</small></div>
+      </button>
+      <div class="status">
+        <i class="dot"></i>
+        <span class="auth" id="authState">DEMO MODE</span>
+        <span class="clock-top" id="topClock">--:--</span>
+        <button class="term-btn" id="termBtn" title="Терминал">&gt;_</button>
+        <button class="profile" id="profile"><span class="avatar" id="userAvatar">AU</span></button>
+      </div>
+    </header>
+
+    <section class="intro">
+      <p class="eyebrow">// find something worth building</p>
+      <h1>Гитхаб без<br><em>информационного шума.</em></h1>
+      <p>Не только лента. Scout помогает найти идею, быстро понять проект и сохранить то, к чему стоит вернуться.</p>
+    </section>
+
+    <section class="action-strip">
+      <button class="action primary" id="discoverBtn"><b>Найти идею</b><span>рандомная находка под твой
+          вкус</span></button>
+      <button class="action" id="stackBtn"><b>Мой стек</b><span>проекты под выбранные технологии</span></button>
+      <button class="action" id="briefBtn"><b>Объясни проще</b><span>перевести техно-язык в нормальный</span></button>
+    </section>
+
+    <div class="control">
+      <label class="search"><span class="search-icon">⌕</span><input id="search"
+          placeholder="найти проект, стек или тему..." autocomplete="off"></label>
+      <button class="refresh" id="refresh" title="Обновить">↻</button>
+    </div>
+
+    <div class="hint"><span>Источник: <b id="sourceLabel">Scout API</b></span><span id="updated">синхронизация...</span>
+    </div>
+
+    <nav class="filters">
+      <button class="filter active" data-filter="all">ДЛЯ ТЕБЯ</button>
+      <button class="filter" data-filter="ai">AI / AGENTS</button>
+      <button class="filter" data-filter="security">SECURITY</button>
+      <button class="filter" data-filter="tools">DEV TOOLS</button>
+      <button class="filter" data-filter="python">PYTHON</button>
+    </nav>
+
+    <div class="section-head">
+      <h2 id="feedTitle">Подобрано для тебя</h2>
+      <div class="head-right">
+        <button class="sec-reset" id="resetFeed" hidden>СБРОС ↺</button>
+        <span id="count">-- PROJECTS</span>
+      </div>
+    </div>
+
+    <section class="feed" id="feed">
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+    </section>
+  </main>
+
+  <nav class="bottom">
+    <div class="nav">
+      <button class="active" id="radarTab"><b>⌂</b>РАДАР</button>
+      <button id="savedTab"><b>♡</b><span class="count" id="savedCount" hidden>0</span>СОХРАНЁННЫЕ</button>
+      <button id="historyTab"><b>↺</b>ИСТОРИЯ</button>
+      <button id="profileTab"><b>⚙</b>ПРОФИЛЬ</button>
+    </div>
+  </nav>
+
+  <div class="hacker-terminal" id="hackerTerminal">
+    <div class="hacker-terminal-head">
+      <div class="hacker-terminal-dots"><i></i><i></i><i></i></div>
+      <span class="ht-title">scout@terminal ~ $</span>
+      <span class="ht-clock" id="hackerClock">--:--:--</span>
+      <button class="x" id="hackerClose">✕</button>
+    </div>
+    <div class="hacker-terminal-body" id="hackerBody"></div>
+    <div class="hacker-terminal-input">
+      <span>❯</span>
+      <input id="hackerInput" placeholder="введи команду (help)..." autocomplete="off" autocapitalize="off"
+        spellcheck="false">
+    </div>
+    <div class="ht-status">
+      <span>UPTIME <b id="htUptime">00:00:00</b></span>
+      <span>CMD <b id="htCmds">0</b></span>
+      <span id="htDate">--</span>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="modal" id="profileModal">
+    <section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>Профиль</h2>
+          <p>Настройки, которые меняют выдачу, а не просто занимают место.</p>
+        </div><button class="x" data-close="profileModal">✕</button>
+      </div>
+      <div class="list">
+        <button id="topicsBtn"><i>⌁</i>
+          <div><strong>Темы и интересы</strong><span id="topicSummary">универсальная подборка</span></div>
+        </button>
+        <button id="sortBtn"><i>↕</i>
+          <div><strong>Режим сортировки</strong><span id="sortSummary">сначала то, что подходит</span></div>
+        </button>
+        <button id="termOpenBtn"><i>❯</i>
+          <div><strong>Терминал</strong><span>команды, часы, статус сессии</span></div>
+        </button>
+        <button id="studioBtn" hidden><i>◆</i>
+          <div><strong>Private Studio</strong><span>режим владельца</span></div>
+        </button>
+        <button id="resetBtn"><i>↺</i>
+          <div><strong>Сбросить вкус</strong><span>начать настройку заново</span></div>
+        </button>
+      </div>
+      <div class="note" id="sessionNote"></div>
+    </section>
+  </div>
+
+  <div class="modal" id="topicsModal">
+    <section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>Темы</h2>
+          <p>Отметь, что хочешь видеть чаще.</p>
+        </div><button class="x" data-close="topicsModal">✕</button>
+      </div>
+      <div class="chip-grid" id="topics"></div>
+      <div class="sheet-actions"><button class="cancel" data-close="topicsModal">ОТМЕНА</button><button
+          class="primary-btn" id="saveTopics">СОХРАНИТЬ</button></div>
+    </section>
+  </div>
+
+  <div class="modal" id="sortModal">
+    <section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>Как сортировать?</h2>
+          <p>Один режим по умолчанию, можно сменить в любой момент.</p>
+        </div><button class="x" data-close="sortModal">✕</button>
+      </div>
+      <div class="list">
+        <button data-sort="fit"><i>✦</i>
+          <div><strong>Попадание</strong><span>сначала проекты под твои интересы</span></div>
+        </button>
+        <button data-sort="fresh"><i>↗</i>
+          <div><strong>Свежее</strong><span>новые и активно обновляемые</span></div>
+        </button>
+        <button data-sort="stars"><i>★</i>
+          <div><strong>Звёзды</strong><span>сначала самые популярные</span></div>
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal" id="savedModal">
+    <section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>Сохранённые</h2>
+          <p>Вернись к находкам, когда будет время.</p>
+        </div><button class="x" data-close="savedModal">✕</button>
+      </div>
+      <div class="note" id="savedInfo"></div>
+      <div class="sheet-actions"><button class="cancel" data-close="savedModal">ЗАКРЫТЬ</button><button
+          class="primary-btn" id="showSaved">ПОКАЗАТЬ</button></div>
+    </section>
+  </div>
+
+  <div class="modal" id="historyModal">
+    <section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>История</h2>
+          <p>Недавно открытые проекты, чтобы не искать второй раз.</p>
+        </div><button class="x" data-close="historyModal">✕</button>
+      </div>
+      <div class="hist" id="histList"></div>
+      <div class="sheet-actions"><button class="cancel" data-close="historyModal">ЗАКРЫТЬ</button><button
+          class="primary-btn" id="clearHistory">ОЧИСТИТЬ</button></div>
+    </section>
+  </div>
+
+  <div class="modal" id="shareModal">
+    <section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>Поделиться</h2>
+          <p id="shareText"></p>
+        </div><button class="x" data-close="shareModal">✕</button>
+      </div>
+      <div class="share-options"><button id="copyLink">КОПИРОВАТЬ</button><button id="tgShare">TELEGRAM</button><button
+          id="nativeShare">ЕЩЁ</button></div>
+    </section>
+  </div>
+
+  <div class="modal" id="briefModal">
+    <section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>Объяснение</h2>
+          <p id="briefText"></p>
+        </div><button class="x" data-close="briefModal">✕</button>
+      </div>
+      <div class="note">Scout убирает маркетинговый язык, оставляет практический смысл и показывает, кому проект реально
+        пригодится.</div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ================= базовое ================= */
+      var API = (window.SCOUT_API || '').replace(/\/$/, '');
+      var $ = function (id) { return document.getElementById(id); };
+      var on = function (id, ev, fn) { var el = $(id); if (el) el.addEventListener(ev, fn); return el; };
+      var pad = function (n) { return String(n).padStart(2, '0'); };
+      var clockStr = function (d) { d = d || new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()); };
+      var dateStr = function (d) { d = d || new Date(); return pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear(); };
+      var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>'"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]; }); };
+      var fmt = function (n) { n = n || 0; return n >= 1000 ? (n / 1000).toFixed(1).replace('.0', '') + 'K' : String(n); };
+      var SESSION_START = Date.now();
+      var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+      var haptic = function (k) { try { tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred(k || 'light'); } catch (e) { } };
+
+      /* ===== БАГ 7: тема Telegram + кнопка «Назад» ===== */
+      var THEME_BG = { dark: '#0a1410', light: '#f5f7f4' };
+
+      function detectScheme() {
+        if (tg && tg.colorScheme) return tg.colorScheme;
+        var p = tg && tg.themeParams ? tg.themeParams : null;
+        if (p && p.bg_color) {
+          var hex = p.bg_color.replace('#', '');
+          if (hex.length === 6) {
+            var r = parseInt(hex.slice(0, 2), 16), g = parseInt(hex.slice(2, 4), 16), b = parseInt(hex.slice(4, 6), 16);
+            return (0.299 * r + 0.587 * g + 0.114 * b) > 140 ? 'light' : 'dark';
+          }
+        }
+        return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+
+      function applyTheme() {
+        var scheme = detectScheme();
+        document.documentElement.setAttribute('data-theme', scheme);
+        var bg = THEME_BG[scheme];
+        try { tg && tg.setBackgroundColor && tg.setBackgroundColor(bg); } catch (e) { }
+        try { tg && tg.setHeaderColor && tg.setHeaderColor(bg); } catch (e) { }
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (!meta) { meta = document.createElement('meta'); meta.name = 'theme-color'; document.head.appendChild(meta); }
+        meta.content = bg;
+      }
+
+      // Стек слоёв для системной кнопки «Назад»
+      var backStack = [];
+      function syncBack() {
+        if (!tg || !tg.BackButton) return;
+        if (backStack.length) tg.BackButton.show(); else tg.BackButton.hide();
+      }
+      function pushLayer(id, closer) { backStack.push({ id: id, close: closer }); syncBack(); }
+      function popLayer(id) {
+        for (var i = backStack.length - 1; i >= 0; i--) { if (backStack[i].id === id) { backStack.splice(i, 1); break; } }
+        syncBack();
+      }
+      if (tg && tg.BackButton) {
+        tg.BackButton.onClick(function () {
+          var layer = backStack.pop();
+          syncBack();
+          if (layer) layer.close();
+        });
+      }
+      if (tg && tg.onEvent) {
+        tg.onEvent('themeChanged', applyTheme);
+        tg.onEvent('viewportChanged', function () {
+          if (tg.viewportStableHeight) {
+            document.documentElement.style.setProperty('--vh', tg.viewportStableHeight + 'px');
+          }
+        });
+      }
+      applyTheme();
+
+      /* ===== часы ===== */
+      setInterval(function () {
+        var t = clockStr();
+        var a = $('topClock'); if (a) a.textContent = t.slice(0, 5);
+        var b = $('bootClock'); if (b) b.textContent = t;
+        var c = $('hackerClock'); if (c) c.textContent = t;
+        var u = $('htUptime'); if (u) u.textContent = uptime();
+        var d = $('htDate'); if (d) d.textContent = dateStr();
+      }, 1000);
+
+      function uptime() {
+        var s = Math.floor((Date.now() - SESSION_START) / 1000);
+        return pad(Math.floor(s / 3600)) + ':' + pad(Math.floor(s / 60) % 60) + ':' + pad(s % 60);
+      }
+
+      /* ================= состояние ================= */
+      var SESSION = null;
+      var repos = [], visible = [], active = 'all';
+      var sortMode = localStorage.sortMode || 'fit';
+      var interests = [];
+      try { interests = JSON.parse(localStorage.interests || '[]'); } catch (e) { interests = []; }
+      var shareItem = null;
+      var lastFetch = { cached: false, stale: false, at: 0, demo: false };
+
+      var map = { ai: ['ai', 'agents', 'llm', 'machine-learning'], security: ['security', 'devsecops', 'secrets', 'vulnerability'], tools: ['developer-tools', 'cli', 'workflow', 'productivity'], python: ['python'], javascript: ['javascript', 'typescript'], design: ['design', 'ui', 'frontend'], automation: ['automation', 'workflow', 'bot'], rust: ['rust'] };
+      var lead = { ai: ['ИИ-инструмент, который делает работу, а не просто говорит.', 'Агент для тех случаев, где обычный чат уже не вывозит.'], security: ['Находит то, что обычно всплывает слишком поздно.', 'Полезная проверка до того, как секрет окажется в проде.'], tools: ['Инструмент, который убирает пару шагов из каждого цикла.', 'Маленькая команда, заметно меньше ручной работы.'], automation: ['Собирает рутину в один поток и запускает его без тебя.', 'Связывает сервисы без склейки на коленке.'], other: ['Небольшой проект, который решает одну задачу хорошо.', 'Находка из тех, что тихо экономят время.'] };
+      var tail = { ai: 'Понимает контекст проекта и не требует ручного промпт-инжиниринга.', security: 'Даёт понятный отчёт, а не стену логов.', tools: 'Запустил и поехал, без конфига на сотню строк.', automation: 'Логи и расписание уже внутри.', other: 'Ставится быстро и легко проверяется на своём коде.' };
+
+      var DEMO = [
+        { full_name: 'aider-ai/aider', name: 'aider', owner: { login: 'aider-ai', avatar_url: '' }, stargazers_count: 34200, language: 'Python', license: { spdx_id: 'Apache-2.0' }, html_url: 'https://github.com/aider-ai/aider', topics: ['ai', 'agents', 'cli', 'python'] },
+        { full_name: 'trufflesecurity/trufflehog', name: 'trufflehog', owner: { login: 'trufflesecurity', avatar_url: '' }, stargazers_count: 18700, language: 'Go', license: { spdx_id: 'AGPL-3.0' }, html_url: 'https://github.com/trufflesecurity/trufflehog', topics: ['security', 'devsecops', 'secrets'] },
+        { full_name: 'zed-industries/zed', name: 'zed', owner: { login: 'zed-industries', avatar_url: '' }, stargazers_count: 59800, language: 'Rust', license: { spdx_id: 'GPL-3.0' }, html_url: 'https://github.com/zed-industries/zed', topics: ['rust', 'developer-tools', 'design'] },
+        { full_name: 'n8n-io/n8n', name: 'n8n', owner: { login: 'n8n-io', avatar_url: '' }, stargazers_count: 48300, language: 'TypeScript', license: { spdx_id: 'Fair-code' }, html_url: 'https://github.com/n8n-io/n8n', topics: ['automation', 'workflow', 'bot'] },
+        { full_name: 'pydantic/pydantic-ai', name: 'pydantic-ai', owner: { login: 'pydantic', avatar_url: '' }, stargazers_count: 9400, language: 'Python', license: { spdx_id: 'MIT' }, html_url: 'https://github.com/pydantic/pydantic-ai', topics: ['ai', 'llm', 'agents'] }
+      ];
+
+      function note(t) {
+        var x = $('toast'); if (!x) return;
+        x.textContent = t; x.classList.add('show');
+        clearTimeout(window.__t); window.__t = setTimeout(function () { x.classList.remove('show'); }, 2400);
+        haptic('light');
+      }
+      function saved() { try { return JSON.parse(localStorage.savedRepos || '[]'); } catch (e) { return []; } }
+
+      /* ===== БАГ 5: история хранит объекты, не голые URL ===== */
+      function loadHist() {
+        var raw = [];
+        try { raw = JSON.parse(localStorage.scoutHistory || '[]'); } catch (e) { raw = []; }
+        return raw.map(function (x) {
+          if (typeof x === 'string') {
+            var short = x.replace('https://github.com/', '');
+            return { url: x, name: short.split('/')[1] || short, full: short, lang: '', stars: 0, at: 0 };
+          }
+          return x;
+        }).filter(function (x) { return x && x.url; });
+      }
+      var hist = loadHist();
+      function pushHist(r) {
+        hist = [{
+          url: r.html_url, name: r.name, full: r.full_name,
+          lang: r.language || '', stars: r.stargazers_count || 0, at: Date.now()
+        }].concat(hist.filter(function (x) { return x.url !== r.html_url; })).slice(0, 30);
+        localStorage.scoutHistory = JSON.stringify(hist);
+      }
+      function ago(ts) {
+        if (!ts) return '—';
+        var s = Math.floor((Date.now() - ts) / 1000);
+        if (s < 60) return 'только что';
+        if (s < 3600) return Math.floor(s / 60) + ' мин назад';
+        if (s < 86400) return Math.floor(s / 3600) + ' ч назад';
+        var d = new Date(ts);
+        return dateStr(d) + ' ' + clockStr(d).slice(0, 5);
+      }
+
+      function cat(r) { var s = ((r.topics || []).join(' ') + ' ' + r.name).toLowerCase(); for (var k in map) { if (map[k].some(function (x) { return s.indexOf(x) > -1; })) return k; } return 'other'; }
+      function explain(r) { var c = cat(r), arr = lead[c] || lead.other; return arr[(r.stargazers_count || 0) % arr.length] + ' ' + (tail[c] || tail.other) + ' ' + fmt(r.stargazers_count) + ' звёзд.'; }
+      function rank(a, b) { if (sortMode === 'stars') return b.stargazers_count - a.stargazers_count; if (sortMode === 'fresh') return String(b.pushed_at || '').localeCompare(String(a.pushed_at || '')); return 0; }
+      function matches(r) {
+        var q = ($('search').value || '').trim().toLowerCase();
+        var tags = ((r.topics || []).join(' ') + ' ' + (r.language || '') + ' ' + r.name).toLowerCase();
+        if (q) return (r.full_name + ' ' + (r.description || '') + ' ' + tags).toLowerCase().indexOf(q) > -1;
+        if (active === 'all') {
+          var w = interests.reduce(function (acc, x) { return acc.concat(map[x] || []); }, []);
+          return !w.length || w.some(function (x) { return tags.indexOf(x) > -1; });
+        }
+        return tags.indexOf(active) > -1 || (map[active] || []).some(function (x) { return tags.indexOf(x) > -1; });
+      }
+
+      function card(r, i) {
+        var isSaved = saved().indexOf(r.html_url) > -1;
+        var av = r.owner.avatar_url ? '<img src="' + esc(r.owner.avatar_url) + '" alt="" loading="lazy">' : esc(r.owner.login.slice(0, 2).toUpperCase());
+        return '<article class="project"><div class="project-top"><div class="repo"><div class="avatar">' + av + '</div><div class="repo-name">' + esc(r.full_name) + '<small>' + esc(r.owner.login) + ' / ' + esc(r.language || 'open source') + '</small></div></div><span class="star">★ ' + fmt(r.stargazers_count) + '</span></div>' +
+          '<div class="project-body"><h3>' + esc(r.name) + '</h3><p>' + esc(explain(r)) + '</p><span class="reason">' + (i === 0 ? '// ЛУЧШЕЕ СОВПАДЕНИЕ' : '// ПОЧЕМУ ТЕБЕ МОЖЕТ ЗАЙТИ') + '</span>' +
+          '<a class="repo-link" href="' + esc(r.html_url) + '" target="_blank" rel="noopener" data-url="' + esc(r.html_url) + '">' + esc(r.html_url.replace('https://', '')) + ' ↗</a>' +
+          '<div class="project-foot"><div class="meta"><span class="language"><i class="lang-dot"></i>' + esc(r.language || 'Other') + '</span><span>' + esc((r.license && r.license.spdx_id) || 'Open source') + '</span></div>' +
+          '<div class="actions"><button class="mini brief" data-url="' + esc(r.html_url) + '">ПОЧЕМУ</button>' +
+          '<button class="icon-btn save ' + (isSaved ? 'saved' : '') + '" data-url="' + esc(r.html_url) + '">' + (isSaved ? '♥' : '♡') + '</button>' +
+          '<button class="icon-btn share" data-url="' + esc(r.html_url) + '" data-name="' + esc(r.name) + '">↗</button></div></div></div></article>';
+      }
+
+      function paint(list) {
+        $('feed').innerHTML = list.length ? list.map(card).join('')
+          : '<div class="empty"><b>Лента пустая</b>Попробуй снять фильтр или выбрать ещё одну тему.</div>';
+        $('count').textContent = pad(list.length) + (list.length === 1 ? ' PROJECT' : ' PROJECTS');
+        bind(); syncSaved();
+      }
+      function render() { $('resetFeed').hidden = true; visible = repos.filter(matches).sort(rank); paint(visible); }
+
+      function bind() {
+        [].forEach.call(document.querySelectorAll('.save'), function (b) {
+          b.onclick = function () {
+            var s = saved(), u = b.dataset.url;
+            s = s.indexOf(u) > -1 ? s.filter(function (x) { return x !== u; }) : s.concat([u]);
+            localStorage.savedRepos = JSON.stringify(s);
+            var now = s.indexOf(u) > -1;
+            b.classList.toggle('saved', now); b.textContent = now ? '♥' : '♡';
+            note(now ? 'СОХРАНЕНО' : 'УДАЛЕНО'); syncSaved();
+          };
+        });
+        [].forEach.call(document.querySelectorAll('.share'), function (b) {
+          b.onclick = function () { shareItem = { url: b.dataset.url, name: b.dataset.name }; $('shareText').textContent = b.dataset.name + ' · выбери способ отправки'; open('shareModal'); };
+        });
+        [].forEach.call(document.querySelectorAll('.brief'), function (b) {
+          b.onclick = function () { var r = repos.find(function (x) { return x.html_url === b.dataset.url; }); if (!r) return; $('briefText').textContent = explain(r); open('briefModal'); };
+        });
+        [].forEach.call(document.querySelectorAll('.repo-link'), function (a) {
+          a.addEventListener('click', function (e) {
+            var r = repos.find(function (x) { return x.html_url === a.dataset.url; });
+            if (r) pushHist(r);
+            if (tg && tg.openLink) { e.preventDefault(); tg.openLink(a.dataset.url); }
+          });
+        });
+      }
+      function syncSaved() { var n = saved().length; $('savedCount').hidden = !n; $('savedCount').textContent = n; }
+
+      /* ===== БАГ 4: GitHub только через прокси с кэшем ===== */
+      function buildQuery() {
+        if (interests.length) {
+          return interests.reduce(function (a, x) { return a.concat(map[x] || []); }, [])
+            .slice(0, 3).map(function (x) { return 'topic:' + x; }).join(' ');
+        }
+        return 'created:>=' + new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
+      }
+
+      function load() {
+        var btn = $('refresh'); btn.classList.add('loading'); btn.disabled = true;
+        if (!SESSION || !SESSION.token) {
+          repos = DEMO; lastFetch = { demo: true };
+          finishLoad(); return Promise.resolve();
+        }
+        return fetch(API + '/api/github/search?q=' + encodeURIComponent(buildQuery()) + '&sort=stars&per_page=20', {
+          headers: { 'x-scout-session': SESSION.token }
+        }).then(function (res) {
+          return res.json().then(function (data) { return { ok: res.ok, status: res.status, data: data }; });
+        }).then(function (r) {
+          if (!r.ok) throw Object.assign(new Error('api'), { info: r });
+          repos = r.data.items && r.data.items.length ? r.data.items : DEMO;
+          lastFetch = { cached: !!r.data.cached, stale: !!r.data.stale, at: r.data.fetched_at || Date.now(), demo: false };
+        }).catch(function (e) {
+          repos = DEMO;
+          lastFetch = { demo: true, reason: e.info && e.info.data ? e.info.data.error : 'network' };
+        }).then(finishLoad);
+      }
+
+      function finishLoad() {
+        var btn = $('refresh'); btn.classList.remove('loading'); btn.disabled = false;
+        if (lastFetch.demo) {
+          $('sourceLabel').textContent = 'офлайн-подборка';
+          $('updated').innerHTML = '<span class="warn">' + (lastFetch.reason === 'rate_limited' ? 'GitHub лимит, показываю демо' : 'нет связи с сервером, демо-данные') + '</span>';
+          note(lastFetch.reason === 'rate_limited' ? 'ЛИМИТ GITHUB · ДЕМО' : 'СЕРВЕР НЕ ОТВЕТИЛ · ДЕМО');
+        } else {
+          $('sourceLabel').textContent = lastFetch.cached ? 'Scout API · кэш' : 'Scout API · GitHub';
+          $('updated').textContent = (lastFetch.stale ? 'из кэша, ' : 'обновлено ') + clockStr(new Date(lastFetch.at)).slice(0, 5);
+        }
+        render();
+      }
+
+      /* ===== модалки + BackButton ===== */
+      function open(id) {
+        var m = $(id); if (!m || m.classList.contains('open')) return;
+        m.classList.add('open');
+        pushLayer(id, function () { m.classList.remove('open'); });
+      }
+      function close(id) { var m = $(id); if (m) m.classList.remove('open'); popLayer(id); }
+
+      [].forEach.call(document.querySelectorAll('[data-close]'), function (b) { b.addEventListener('click', function () { close(b.dataset.close); }); });
+      [].forEach.call(document.querySelectorAll('.modal'), function (m) { m.addEventListener('click', function (e) { if (e.target === m) close(m.id); }); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        var layer = backStack.pop(); syncBack();
+        if (layer) layer.close();
+      });
+
+      /* ===== кнопки ===== */
+      function setActionState(id) {
+        ['discoverBtn', 'stackBtn', 'briefBtn'].forEach(function (x) { var el = $(x); if (el) el.classList.toggle('on', x === id); });
+      }
+      on('brandBtn', 'click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); tapBrand(); });
+      on('profile', 'click', function () { open('profileModal'); });
+      on('profileTab', 'click', function () { open('profileModal'); });
+      on('termBtn', 'click', function () { toggleTerminal(); });
+      on('radarTab', 'click', function () { $('feedTitle').textContent = 'Подобрано для тебя'; setActionState(null); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+      on('discoverBtn', 'click', function () {
+        var pool = visible.length ? visible : (repos.length ? repos : DEMO);
+        var r = pool[Math.floor(Math.random() * pool.length)];
+        $('search').value = ''; setActionState('discoverBtn');
+        $('feedTitle').textContent = 'Одна находка';
+        paint([r]); $('resetFeed').hidden = false;
+        note('НАШЁЛ ОДНУ, НО ХОРОШУЮ');
+      });
+      on('stackBtn', 'click', function () {
+        var target = interests.length && interests[0] === 'ai' ? 'ai' : 'tools';
+        active = target;
+        [].forEach.call(document.querySelectorAll('.filter'), function (x) { x.classList.toggle('active', x.dataset.filter === target); });
+        setActionState('stackBtn'); render();
+        $('feedTitle').textContent = 'Мой стек'; $('resetFeed').hidden = false;
+        note('ПОДОБРАЛ ПОД ТВОЙ СТЕК');
+      });
+      on('briefBtn', 'click', function () {
+        var r = visible[0] || repos[0] || DEMO[0];
+        setActionState('briefBtn'); $('briefText').textContent = explain(r); open('briefModal');
+      });
+      on('resetFeed', 'click', function () {
+        active = 'all'; $('search').value = '';
+        [].forEach.call(document.querySelectorAll('.filter'), function (x) { x.classList.toggle('active', x.dataset.filter === 'all'); });
+        setActionState(null); $('feedTitle').textContent = 'Подобрано для тебя';
+        render(); note('ЛЕНТА СБРОШЕНА');
+      });
+      on('search', 'input', function () {
+        var q = $('search').value.trim();
+        $('feedTitle').textContent = q ? 'Поиск' : 'Подобрано для тебя';
+        render(); if (q) $('resetFeed').hidden = false;
+      });
+      on('refresh', 'click', function () { note('ОБНОВЛЯЮ ЛЕНТУ'); load(); });
+
+      [].forEach.call(document.querySelectorAll('.filter'), function (b) {
+        b.addEventListener('click', function () {
+          [].forEach.call(document.querySelectorAll('.filter'), function (x) { x.classList.remove('active'); });
+          b.classList.add('active'); active = b.dataset.filter; setActionState(null);
+          $('feedTitle').textContent = active === 'all' ? 'Подобрано для тебя' : b.textContent.trim();
+          render(); if (active !== 'all') $('resetFeed').hidden = false;
+        });
+      });
+
+      function renderTopics() {
+        $('topics').innerHTML = Object.keys(map).map(function (x) {
+          return '<button class="chip ' + (interests.indexOf(x) > -1 ? 'on' : '') + '" data-x="' + x + '">' + x.toUpperCase() + '</button>';
+        }).join('');
+        [].forEach.call($('topics').querySelectorAll('[data-x]'), function (b) { b.onclick = function () { b.classList.toggle('on'); }; });
+      }
+      on('topicsBtn', 'click', function () { renderTopics(); close('profileModal'); open('topicsModal'); });
+      on('saveTopics', 'click', function () {
+        interests = [].map.call($('topics').querySelectorAll('.chip.on'), function (x) { return x.dataset.x; });
+        localStorage.interests = JSON.stringify(interests);
+        $('topicSummary').textContent = interests.length ? interests.join(' · ') : 'универсальная подборка';
+        close('topicsModal'); load(); note('ТЕМЫ ОБНОВЛЕНЫ');
+      });
+      on('sortBtn', 'click', function () { close('profileModal'); open('sortModal'); });
+      [].forEach.call(document.querySelectorAll('[data-sort]'), function (b) {
+        b.addEventListener('click', function () {
+          sortMode = b.dataset.sort; localStorage.sortMode = sortMode;
+          $('sortSummary').textContent = { fit: 'сначала то, что подходит', fresh: 'сначала свежее', stars: 'сначала популярное' }[sortMode];
+          close('sortModal'); render(); note('СОРТИРОВКА: ' + sortMode.toUpperCase());
+        });
+      });
+      on('resetBtn', 'click', function () {
+        ['interests', 'sortMode', 'savedRepos', 'scoutHistory'].forEach(function (k) { localStorage.removeItem(k); });
+        location.reload();
+      });
+      on('termOpenBtn', 'click', function () { close('profileModal'); toggleTerminal(true); });
+
+      on('savedTab', 'click', function () {
+        var s = saved();
+        $('savedInfo').textContent = s.length ? 'Сохранено проектов: ' + s.length + '. Можно показать их отдельной лентой.' : 'Пока пусто. Нажимай ♡ на карточках.';
+        open('savedModal');
+      });
+      on('showSaved', 'click', function () {
+        var s = saved(), list = repos.filter(function (r) { return s.indexOf(r.html_url) > -1; });
+        $('feedTitle').textContent = 'Сохранённые'; $('resetFeed').hidden = false;
+        paint(list); close('savedModal');
+      });
+
+      on('historyTab', 'click', function () {
+        $('histList').innerHTML = hist.length
+          ? hist.map(function (h) {
+            return '<a href="' + esc(h.url) + '" target="_blank" rel="noopener"><strong>' + esc(h.name) +
+              '<small>' + esc(h.full) + (h.lang ? ' · ' + esc(h.lang) : '') + (h.stars ? ' · ★' + fmt(h.stars) : '') + '</small></strong><em>' + ago(h.at) + '</em></a>';
+          }).join('')
+          : '<div class="empty">История пока пустая. Открой пару проектов.</div>';
+        open('historyModal');
+      });
+      on('clearHistory', 'click', function () { hist = []; localStorage.scoutHistory = '[]'; close('historyModal'); note('ИСТОРИЯ ОЧИЩЕНА'); });
+
+      on('copyLink', 'click', function () {
+        if (!shareItem) return;
+        (navigator.clipboard ? navigator.clipboard.writeText(shareItem.url) : Promise.reject())
+          .then(function () { note('ССЫЛКА СКОПИРОВАНА'); }).catch(function () { note(shareItem.url); });
+      });
+      on('tgShare', 'click', function () {
+        if (!shareItem) return;
+        var url = 'https://t.me/share/url?url=' + encodeURIComponent(shareItem.url) + '&text=' + encodeURIComponent(shareItem.name);
+        if (tg && tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank');
+      });
+      on('nativeShare', 'click', function () {
+        if (!shareItem) return;
+        if (navigator.share) navigator.share({ title: shareItem.name, url: shareItem.url }).catch(function () { });
+        else $('copyLink').click();
+      });
+
+      /* ================= терминал ================= */
+      var termOpen = false, cmdCount = 0, cmdHist = [], cmdIdx = -1, matrixOn = false;
+
+      function hLine(text, state) {
+        state = state || '';
+        return '<div class="h-line ' + state + '"><em>' + clockStr() + '</em><i>' + (state === 'success' ? '✓' : state === 'error' ? '✗' : '❯') + '</i><span>' + text + '</span></div>';
+      }
+      function out(lines) {
+        var body = $('hackerBody');
+        lines.forEach(function (l) { body.innerHTML += hLine(esc(l.t), l.s || ''); });
+        body.scrollTop = body.scrollHeight;
+      }
+      function startMatrix() {
+        if (matrixOn) return; matrixOn = true;
+        var chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホ0123456789ABCDEF';
+        var count = 0;
+        var iv = setInterval(function () {
+          if (count++ > 80 || !termOpen) { clearInterval(iv); matrixOn = false; return; }
+          var el = document.createElement('span');
+          el.className = 'matrix-char';
+          el.textContent = chars[Math.floor(Math.random() * chars.length)];
+          el.style.left = Math.random() * 100 + 'vw';
+          el.style.top = '-20px';
+          el.style.fontSize = (10 + Math.random() * 14) + 'px';
+          el.style.animationDuration = (2 + Math.random() * 3) + 's';
+          document.body.appendChild(el);
+          setTimeout(function () { el.remove(); }, 5000);
+        }, 80);
+      }
+
+      var CMDS = {
+        help: function () {
+          return [
+            { t: 'ДОСТУПНЫЕ КОМАНДЫ:', s: 'success' },
+            { t: '  help      список команд' }, { t: '  time      текущее время' },
+            { t: '  date      дата и день недели' }, { t: '  uptime    время сессии' },
+            { t: '  status    статус системы' }, { t: '  session   данные сессии' },
+            { t: '  top       топ проектов в ленте' }, { t: '  open N    открыть проект №N' },
+            { t: '  find X    поиск по ленте' }, { t: '  saved     сохранённые' },
+            { t: '  history   история просмотров' }, { t: '  theme     текущая тема' },
+            { t: '  refresh   перезагрузить ленту' }, { t: '  ping      проверить сервер' },
+            { t: '  matrix    матрица' }, { t: '  clear     очистить' }, { t: '  exit      выйти' }
+          ];
+        },
+        time: function () {
+          var d = new Date();
+          return [{ t: clockStr(d), s: 'success' }, { t: '  unix: ' + Math.floor(d.getTime() / 1000) },
+          { t: '  зона: UTC' + (d.getTimezoneOffset() > 0 ? '-' : '+') + pad(Math.abs(d.getTimezoneOffset() / 60)) + ':00' }];
+        },
+        date: function () {
+          var d = new Date(), days = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'];
+          return [{ t: dateStr(d) + ' · ' + days[d.getDay()], s: 'success' }, { t: '  время: ' + clockStr(d) }];
+        },
+        uptime: function () { return [{ t: 'session uptime: ' + uptime(), s: 'success' }, { t: '  старт: ' + clockStr(new Date(SESSION_START)) }]; },
+        status: function () {
+          return [
+            { t: 'SYSTEM STATUS', s: 'success' },
+            { t: '  time:     ' + clockStr() + ' · ' + dateStr() },
+            { t: '  auth:     ' + (SESSION ? (SESSION.dev ? 'DEV (без Telegram)' : 'TELEGRAM VERIFIED') : 'НЕТ СЕССИИ') },
+            { t: '  user:     ' + (SESSION && SESSION.user ? SESSION.user.first_name + ' [' + SESSION.user.id + ']' : 'anonymous') },
+            { t: '  source:   ' + (lastFetch.demo ? 'demo' : lastFetch.cached ? 'cache' : 'github') },
+            { t: '  repos:    ' + repos.length + ' loaded / ' + visible.length + ' visible' },
+            { t: '  saved:    ' + saved().length + ' · history: ' + hist.length },
+            { t: '  sort:     ' + sortMode + ' · filter: ' + active },
+            { t: '  theme:    ' + document.documentElement.getAttribute('data-theme') },
+            { t: '  uptime:   ' + uptime(), s: 'success' }
+          ];
+        },
+        session: function () {
+          if (!SESSION) return [{ t: 'сессии нет', s: 'error' }];
+          return [
+            { t: 'SESSION', s: 'success' },
+            { t: '  режим:     ' + (SESSION.dev ? 'DEV' : 'PROD') },
+            { t: '  подписка:  ' + (SESSION.subscribed ? 'подтверждена сервером' : 'нет') },
+            { t: '  владелец:  ' + (SESSION.features && SESSION.features.privateStudio ? 'да' : 'нет') },
+            { t: '  токен:     ' + (SESSION.token ? SESSION.token.slice(0, 18) + '…' : 'нет') }
+          ];
+        },
+        theme: function () {
+          var s = document.documentElement.getAttribute('data-theme');
+          return [{ t: 'тема: ' + s + (tg ? ' (из Telegram)' : ' (из системы)'), s: 'success' }];
+        },
+        top: function () {
+          var list = (visible.length ? visible : repos).slice(0, 5);
+          if (!list.length) return [{ t: 'лента пустая', s: 'error' }];
+          return [{ t: 'TOP ' + list.length + ':', s: 'success' }].concat(list.map(function (r, i) {
+            return { t: '  ' + (i + 1) + '. ' + r.full_name + '  ★' + fmt(r.stargazers_count) };
+          }));
+        },
+        open: function (arg) {
+          var list = visible.length ? visible : repos, n = parseInt(arg, 10);
+          if (!n || !list[n - 1]) return [{ t: 'нет проекта №' + (arg || '?') + ' · попробуй top', s: 'error' }];
+          var r = list[n - 1]; pushHist(r);
+          if (tg && tg.openLink) tg.openLink(r.html_url); else window.open(r.html_url, '_blank');
+          return [{ t: 'открываю ' + r.full_name, s: 'success' }];
+        },
+        find: function (arg) {
+          if (!arg) return [{ t: 'использование: find <запрос>', s: 'error' }];
+          $('search').value = arg; render(); $('resetFeed').hidden = false; $('feedTitle').textContent = 'Поиск';
+          return [{ t: 'найдено ' + visible.length + ' по "' + arg + '"', s: 'success' }];
+        },
+        saved: function () {
+          var s = saved();
+          if (!s.length) return [{ t: 'сохранённых нет', s: 'error' }];
+          return [{ t: 'СОХРАНЕНО: ' + s.length, s: 'success' }].concat(s.slice(0, 8).map(function (u) { return { t: '  ' + u.replace('https://github.com/', '') }; }));
+        },
+        history: function () {
+          if (!hist.length) return [{ t: 'история пустая', s: 'error' }];
+          return [{ t: 'ИСТОРИЯ: ' + hist.length, s: 'success' }].concat(hist.slice(0, 8).map(function (h) {
+            return { t: '  ' + h.full + '  ' + ago(h.at) };
+          }));
+        },
+        refresh: function () { load(); return [{ t: 'перезагружаю ленту...', s: 'success' }]; },
+        ping: function () {
+          var t0 = performance.now();
+          fetch(API + '/api/health').then(function (r) { return r.json(); }).then(function (d) {
+            out([{ t: 'сервер жив · ' + Math.round(performance.now() - t0) + 'ms · github: ' + d.github + (d.dev ? ' · DEV' : ''), s: 'success' }]);
+          }).catch(function () { out([{ t: 'сервер не отвечает', s: 'error' }]); });
+          return [{ t: 'пингую ' + (API || 'same-origin') + '...' }];
+        },
+        matrix: function () { startMatrix(); return [{ t: 'MATRIX RAIN ON', s: 'success' }]; },
+        clear: function () { return 'CLEAR'; },
+        exit: function () { return 'EXIT'; }
+      };
+
+      function processCmd(raw) {
+        var parts = raw.trim().split(/\s+/), name = (parts[0] || '').toLowerCase(), arg = parts.slice(1).join(' ');
+        cmdCount++; $('htCmds').textContent = cmdCount;
+        $('hackerBody').innerHTML += hLine('$ ' + esc(raw), 'success');
+        if (!name) return;
+        if (CMDS[name]) {
+          var res = CMDS[name](arg);
+          if (res === 'CLEAR') { $('hackerBody').innerHTML = ''; return; }
+          if (res === 'EXIT') { toggleTerminal(false); return; }
+          out(res); return;
+        }
+        out([{ t: 'command not found: ' + name + ' · введи help', s: 'error' }]);
+      }
+
+      function toggleTerminal(force) {
+        var next = typeof force === 'boolean' ? force : !termOpen;
+        if (next === termOpen) return;
+        termOpen = next;
+        $('hackerTerminal').classList.toggle('open', termOpen);
+        $('termBtn').classList.toggle('on', termOpen);
+        if (termOpen) {
+          pushLayer('terminal', function () { toggleTerminal(false); });
+          if (!$('hackerBody').innerHTML) {
+            out([{ t: 'SCOUT TERMINAL v3.0 · сессия открыта в ' + clockStr(), s: 'success' },
+            { t: 'дата: ' + dateStr() + ' · введи help для списка команд' }]);
+          }
+          setTimeout(function () { $('hackerInput').focus(); }, 250);
+          haptic('heavy'); note('ТЕРМИНАЛ · ON');
+        } else {
+          popLayer('terminal');
+          [].forEach.call(document.querySelectorAll('.matrix-char'), function (e) { e.remove(); });
+          note('ТЕРМИНАЛ · OFF');
+        }
+      }
+
+      on('hackerClose', 'click', function () { toggleTerminal(false); });
+      on('hackerInput', 'keydown', function (e) {
+        if (e.key === 'Enter') {
+          var val = e.target.value;
+          if (val.trim()) { cmdHist.unshift(val); cmdIdx = -1; processCmd(val); }
+          e.target.value = '';
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault(); if (cmdIdx < cmdHist.length - 1) { cmdIdx++; e.target.value = cmdHist[cmdIdx]; }
+        } else if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (cmdIdx > 0) { cmdIdx--; e.target.value = cmdHist[cmdIdx]; } else { cmdIdx = -1; e.target.value = ''; }
+        } else if (e.key === 'Tab') {
+          e.preventDefault();
+          var v = e.target.value.trim().toLowerCase();
+          var hit = Object.keys(CMDS).find(function (k) { return v && k.indexOf(v) === 0; });
+          if (hit) e.target.value = hit + ' ';
+        }
+        e.stopPropagation();
+      });
+
+      var konami = [], KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+      document.addEventListener('keydown', function (e) {
+        konami.push(e.key);
+        if (konami.length > KONAMI.length) konami.shift();
+        if (konami.join(',') === KONAMI.join(',')) { konami = []; toggleTerminal(); }
+      });
+      var tapCount = 0, tapTimer = null;
+      function tapBrand() {
+        tapCount++; clearTimeout(tapTimer);
+        tapTimer = setTimeout(function () { tapCount = 0; }, 700);
+        if (tapCount >= 5) { tapCount = 0; toggleTerminal(); }
+      }
+
+      /* ===== БАГ 1 и 3: сессия и права решаются на сервере ===== */
+      function requestSession() {
+        return fetch(API + '/api/session', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ initData: tg ? tg.initData : '' })
+        }).then(function (res) {
+          return res.json().then(function (d) { return { ok: res.ok, data: d }; });
+        }).then(function (r) {
+          if (!r.ok) return { subscribed: false, error: r.data && r.data.error };
+          return r.data;
+        }).catch(function () {
+          // Сервер недоступен — фейлимся закрыто. Никаких флагов в localStorage.
+          return { subscribed: false, error: 'offline' };
+        });
+      }
+
+      function showGate(reason) {
+        var gate = $('subGate'); gate.hidden = false;
+        var boot = $('boot'); if (boot) boot.style.display = 'none';
+        document.body.classList.remove('app-booting');
+        if (reason === 'offline') {
+          $('gateText').textContent = 'Сервер Scout не отвечает. Доступ закрыт до восстановления связи.';
+          $('subStatus').textContent = 'НЕТ СВЯЗИ С СЕРВЕРОМ';
+        } else if (reason === 'bad_init_data') {
+          $('gateText').textContent = 'Открой приложение через Telegram: подпись сессии не прошла проверку.';
+          $('subStatus').textContent = 'СЕССИЯ НЕ ПОДТВЕРЖДЕНА';
+        }
+      }
+      function hideGate() {
+        var gate = $('subGate');
+        gate.classList.add('exit');
+        setTimeout(function () { gate.remove(); }, 600);
+      }
+
+      on('subCheck', 'click', function () {
+        $('subStatus').textContent = 'ПРОВЕРЯЮ...';
+        $('subStatus').style.color = 'var(--muted)';
+        requestSession().then(function (s) {
+          if (s.subscribed) {
+            SESSION = s;
+            $('subStatus').textContent = '✓ ПОДПИСКА ПОДТВЕРЖДЕНА';
+            $('subStatus').style.color = 'var(--green)';
+            try { tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success'); } catch (e) { }
+            setTimeout(function () { hideGate(); startApp(); }, 700);
+          } else {
+            $('subStatus').textContent = s.error === 'offline' ? 'СЕРВЕР НЕ ОТВЕЧАЕТ' : 'ПОДПИСКА НЕ НАЙДЕНА · ПОДПИШИСЬ И ПОПРОБУЙ СНОВА';
+            $('subStatus').style.color = 'var(--pink)';
+          }
+        });
+      });
+      on('subLink', 'click', function (e) {
+        if (tg && tg.openTelegramLink) { e.preventDefault(); tg.openTelegramLink('https://t.me/scoutgit'); }
+      });
+
+      /* ===== boot ===== */
+      var bootDone = false;
+      function runBoot() {
+        document.body.classList.add('app-booting');
+        var boot = $('boot'), bar = $('bar'), pct = $('pct'), bootStatus = $('bootStatus'), terminal = $('terminal'), typed = $('typed');
+        var steps = [
+          ['handshake', 'проверяю подпись Telegram'],
+          ['identity', 'сверяю подписку на канал'],
+          ['signal', 'тяну ленту через Scout API'],
+          ['ranking', 'ранжирую под твой вкус'],
+          ['ready', 'радар готов']
+        ];
+        var timers = [];
+        function addLine(label, text, state) {
+          state = state || '';
+          var row = document.createElement('div');
+          row.className = 'line ' + state;
+          row.innerHTML = '<em>' + clockStr() + '</em><i>' + (state === 'ok' ? '✓' : '>') + '</i><span>' + label + ' :: ' + text + '</span><b>' + (state === 'ok' ? 'OK' : '') + '</b>';
+          terminal.appendChild(row); terminal.scrollTop = terminal.scrollHeight;
+        }
+        function finish() {
+          if (bootDone) return; bootDone = true;
+          timers.forEach(clearTimeout);
+          bar.style.width = '100%'; pct.textContent = '100%';
+          bootStatus.textContent = 'система готова'; typed.textContent = 'access_granted';
+          addLine('boot', 'session ready', 'ok');
+          setTimeout(function () {
+            boot.classList.add('exit');
+            document.body.classList.remove('app-booting');
+            document.body.classList.add('app-booted');
+            setTimeout(function () { if (boot.parentNode) boot.remove(); }, 520);
+          }, 360);
+        }
+        steps.forEach(function (s, i) {
+          timers.push(setTimeout(function () { typed.textContent = s[1].replace(/ /g, '_'); addLine(s[0], s[1]); }, i * 380 + 60));
+          timers.push(setTimeout(function () {
+            var val = Math.min(100, Math.round(((i + 1) / steps.length) * 100));
+            bar.style.width = val + '%'; pct.textContent = String(val).padStart(2, '0') + '%';
+            bootStatus.textContent = s[1] + '...';
+            var last = terminal.lastElementChild;
+            if (last) { last.classList.add('ok'); last.querySelector('i').textContent = '✓'; last.querySelector('b').textContent = 'OK'; }
+          }, i * 380 + 300));
+        });
+        timers.push(setTimeout(finish, steps.length * 380 + 460));
+        on('skip', 'click', finish);
+        document.addEventListener('keydown', function (e) {
+          if (!bootDone && (e.code === 'Space' || e.key === 'Escape' || (e.key && e.key.length === 1))) finish();
+        });
+      }
+
+      /* ===== запуск ===== */
+      function startApp() {
+        var u = SESSION && SESSION.user ? SESSION.user : null;
+        if (u) {
+          $('authState').textContent = 'TELEGRAM // AUTH';
+          $('userAvatar').textContent = (u.first_name || 'AU').slice(0, 2).toUpperCase();
+        } else {
+          $('authState').textContent = SESSION && SESSION.dev ? 'DEV MODE' : 'GUEST';
+        }
+        $('sessionNote').textContent = SESSION && SESSION.dev
+          ? 'DEV-режим: сервер запущен без токена бота, гейт подписки отключён.'
+          : 'Подписка и права проверены на сервере. Сессия живёт час и продлевается при перезапуске.';
+        if (SESSION && SESSION.features && SESSION.features.privateStudio) {
+          $('studioBtn').hidden = false;
+          $('studioBtn').onclick = function () { close('profileModal'); note('PRIVATE STUDIO · OWNER MODE'); };
+        }
+        $('sortSummary').textContent = { fit: 'сначала то, что подходит', fresh: 'сначала свежее', stars: 'сначала популярное' }[sortMode];
+        $('topicSummary').textContent = interests.length ? interests.join(' · ') : 'универсальная подборка';
+        syncSaved();
+        runBoot();
+        load();
+      }
+
+      (function init() {
+        if (tg) { try { tg.ready(); tg.expand(); } catch (e) { } }
+        if (!localStorage.interests) { interests = ['ai', 'tools']; localStorage.interests = JSON.stringify(interests); }
+        $('boot').style.display = 'none';
+        requestSession().then(function (s) {
+          SESSION = s;
+          if (s.subscribed) { $('boot').style.display = ''; startApp(); }
+          else showGate(s.error);
+        });
+      })();
+    })();
+  </script>
+</body>
+
+</html>
