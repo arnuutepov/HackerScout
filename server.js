@@ -80,7 +80,6 @@ function validateInitData(initData) {
   const hash = params.get('hash');
   if (!hash) return null;
   params.delete('hash');
-  params.delete('signature');
 
   const checkString = [...params.entries()]
     .sort((x, y) => (x[0] < y[0] ? -1 : x[0] > y[0] ? 1 : 0))
