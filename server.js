@@ -22,8 +22,8 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
-const BOT_TOKEN = process.env.BOT_TOKEN || '';
-const CHANNEL = process.env.CHANNEL || '@scoutgit';
+const BOT_TOKEN = (process.env.BOT_TOKEN || '').trim();
+const CHANNEL = (process.env.CHANNEL || '@scoutgit').trim();
 const OWNER_ID = Number(process.env.OWNER_ID || 0);
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
@@ -249,7 +249,12 @@ async function buildSession(initData) {
       subscribed: true,
       user: null,
       features: { privateStudio: false },
-      token: signSession({ uid: 0, dev: true, owner: false, exp: Math.floor(Date.now() / 1000) + SESSION_TTL })
+      token: signSession({
+        uid: 0,
+        dev: true,
+        owner: false,
+        exp: Math.floor(Date.now() / 1000) + SESSION_TTL
+      })
     };
   }
 
@@ -262,26 +267,23 @@ async function buildSession(initData) {
   return {
     dev: false,
     subscribed,
-    user: { id: user.id, first_name: user.first_name, username: user.username },
-    features: { privateStudio: subscribed && owner },
+    user: {
+      id: user.id,
+      first_name: user.first_name,
+      username: user.username
+    },
+    features: {
+      privateStudio: subscribed && owner
+    },
     token: subscribed
-      ? signSession({ uid: user.id, owner, exp: Math.floor(Date.now() / 1000) + SESSION_TTL })
+      ? signSession({
+          uid: user.id,
+          owner,
+          exp: Math.floor(Date.now() / 1000) + SESSION_TTL
+        })
       : null
   };
 }
-
-const server = http.createServer(async (req, res) => {
-  const url = new URL(req.url, 'http://' + (req.headers.host || 'localhost'));
-  const route = url.pathname;
-
-  cors(res);
-  if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
-
-  if (route.startsWith('/api/')) {
-    if (rateLimited(clientIp(req))) {
-      return send(res, 429, { error: 'rate_limited', message: 'Слишком много запросов' });
-    }
-  }
 
   /* ---- health ---- */
   if (route === '/api/health') {
