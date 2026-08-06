@@ -23,7 +23,7 @@ const fs = require('fs');
 const path = require('path');
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
-const CHANNEL = process.env.CHANNEL || '@codrng';
+const CHANNEL = process.env.CHANNEL || '@scoutgit';
 const OWNER_ID = Number(process.env.OWNER_ID || 0);
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
