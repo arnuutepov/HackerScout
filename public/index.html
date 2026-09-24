@@ -1440,6 +1440,19 @@
       transform: translateY(-2px)
     }
 
+    .sub-gate-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .sub-gate-btn.secondary {
+      background: transparent;
+      color: var(--green);
+      border: 1px solid var(--green)
+    }
+
     .sub-gate-check {
       display: block;
       margin: 16px auto 0;
@@ -1645,7 +1658,10 @@
       <div class="sub-gate-icon"><span>⌁</span></div>
       <h2>Подпишись на<br><em>канал Scout</em></h2>
       <p id="gateText">Чтобы пользоваться радаром, нужно быть подписанным на канал. Это бесплатно.</p>
-      <a class="sub-gate-btn" href="/github-scout-private-studio.html" id="subLink">ОТКРЫТЬ PRIVATE STUDIO ↗</a>
+      <div class="sub-gate-actions">
+        <a class="sub-gate-btn" href="https://t.me/scoutgit" target="_blank" rel="noopener" id="subLink">TELEGRAM-КАНАЛ ↗</a>
+        <a class="sub-gate-btn secondary" href="/github-scout-private-studio.html" id="studioLink">PRIVATE STUDIO ↗</a>
+      </div>
       <button class="sub-gate-check" id="subCheck">ВОЙТИ В PRIVATE STUDIO</button>
       <div class="sub-gate-status" id="subStatus"></div>
       <div class="sub-gate-note">GITHUB SCOUT · PRIVATE RADAR · v3.0</div>
@@ -2515,7 +2531,7 @@
         });
       });
       on('subLink', 'click', function (e) {
-        if (tg && tg.openLink) { e.preventDefault(); tg.openLink('/github-scout-private-studio.html'); }
+        if (tg && tg.openTelegramLink) { e.preventDefault(); tg.openTelegramLink('https://t.me/scoutgit'); }
       });
 
       /* ===== boot ===== */
