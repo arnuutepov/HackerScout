@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<!-- skill:chrome -->
+<style>
+/* Credit line — bottom-right */
+.design-ui-credit {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  font: 11px/1 system-ui, sans-serif;
+  color: rgba(128,128,128,0.5);
+  pointer-events: none;
+  z-index: 2147483647;
+  transition: opacity 0.4s ease;
+  user-select: none;
+  letter-spacing: 0.02em;
+}
+
+/* Hide chrome on touch devices */
+@media (hover: none) {
+  .design-ui-credit { display: none; }
+}
+
+/* Print fixes */
+@media print {
+  * {
+    transition: none !important;
+    animation: none !important;
+    box-shadow: none !important;
+  }
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .design-ui-credit { display: none !important; }
+}
+
+</style>
+<script>
+(function () {
+    // Design-ui pages are single compositions, so the whole body is editable.
+    function markEditable() {
+        document.body.classList.add('artifact-editable');
+    }
+
+    // Credit badge with idle-fade. Hover devices only.
+    function initChromeUI() {
+        if (!matchMedia('(hover: hover)').matches) return;
+
+        var credit = document.createElement('div');
+        credit.className = 'design-ui-credit';
+        credit.setAttribute('aria-hidden', 'true');
+        credit.innerHTML = '\u{1F49C} by ClickUp Brain';
+        document.body.appendChild(credit);
+
+        var timer = null;
+        var fade = function (out) { credit.style.opacity = out ? '0' : ''; };
+        fade(true);
+        var show = function () {
+            fade(false);
+            clearTimeout(timer);
+            timer = setTimeout(function () { fade(true); }, 3000);
+        };
+        document.addEventListener('mousemove', show);
+        show();
+    }
+
+    function init() {
+        markEditable();
+        initChromeUI();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+
+</script>
+<!-- /skill:chrome -->
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GitHub Scout // Hacker Boot</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+:root{--bg:oklch(10% .025 145);--panel:oklch(15% .03 145);--line:oklch(28% .04 145);--text:oklch(92% .025 145);--muted:oklch(63% .035 145);--green:oklch(82% .2 140);--lime:oklch(88% .17 115);--pink:oklch(76% .16 350);--mono:'IBM Plex Mono',monospace;--sans:'Space Grotesk',system-ui,sans-serif;--ease:cubic-bezier(.16,1,.3,1)}
+*{box-sizing:border-box}html{background:var(--bg);color:var(--text)}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 30%,oklch(25% .055 145 / .2),transparent 36rem),var(--bg);font-family:var(--sans);overflow:hidden}button{font:inherit;color:inherit;border:0;cursor:pointer}button:focus-visible{outline:2px solid var(--lime);outline-offset:3px}.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+/* Fake app behind the boot layer, so the handoff feels like a real app launch. */
+.shell{width:min(100%,760px);margin:auto;padding:18px 16px;opacity:.42;filter:saturate(.7)}.top{display:flex;justify-content:space-between;align-items:center;padding-bottom:22px;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.04em}.mark{width:28px;height:28px;display:grid;place-items:center;background:var(--green);color:var(--bg);transform:rotate(45deg)}.mark span{transform:rotate(-45deg);font:600 18px var(--mono)}.brand small{display:block;color:var(--muted);font:10px var(--mono);margin-top:3px;letter-spacing:.11em}.ghost-title{padding:44px 0 26px;border-bottom:1px solid var(--line)}.ghost-title h1{font-size:clamp(38px,8vw,60px);line-height:.95;letter-spacing:-.06em;margin:10px 0;max-width:9ch}.ghost-title h1 em{color:var(--lime);font-style:normal}.ghost-title p{color:var(--muted);max-width:42ch;line-height:1.5}.ghost-row{height:56px;margin-top:22px;border:1px solid var(--line);background:var(--panel);border-radius:6px}.ghost-card{height:220px;margin-top:12px;border:1px solid var(--line);background:var(--panel);border-radius:8px}
+/* Boot layer */
+.boot{position:fixed;inset:0;z-index:10;background:var(--bg);display:grid;place-items:center;padding:20px;transition:opacity .45s var(--ease),transform .6s var(--ease)}.boot.exit{opacity:0;transform:scale(1.02);pointer-events:none}.grid{position:absolute;inset:0;opacity:.24;background-image:linear-gradient(oklch(70% .12 140 / .08) 1px,transparent 1px),linear-gradient(90deg,oklch(70% .12 140 / .08) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at center,black 0%,transparent 76%);animation:gridMove 20s linear infinite}@keyframes gridMove{to{background-position:44px 44px}}.scanline{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 4px,oklch(100% .01 140 / .035) 5px);mix-blend-mode:screen;opacity:.5}.noise{position:absolute;inset:-50%;pointer-events:none;opacity:.045;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");animation:noise .2s steps(2) infinite}@keyframes noise{0%{transform:translate(0)}25%{transform:translate(3%,-2%)}50%{transform:translate(-2%,3%)}75%{transform:translate(2%,2%)}100%{transform:translate(-3%,-1%)}}
+.boot-core{position:relative;width:min(100%,620px);padding:10px}.boot-brand{display:flex;align-items:center;gap:15px;margin-bottom:44px}.boot-mark{width:58px;height:58px;display:grid;place-items:center;background:var(--green);color:var(--bg);transform:rotate(45deg);box-shadow:0 0 48px oklch(70% .2 140 / .32);animation:pulse 2.2s ease-in-out infinite}.boot-mark span{transform:rotate(-45deg);font:600 31px var(--mono)}@keyframes pulse{50%{box-shadow:0 0 75px oklch(70% .2 140 / .5)}}.boot-name{font-size:clamp(22px,5vw,32px);font-weight:700;letter-spacing:.04em}.boot-name small{display:block;color:var(--muted);font:11px var(--mono);letter-spacing:.15em;margin-top:7px}.prompt{display:flex;align-items:center;gap:8px;color:var(--green);font:13px var(--mono);margin-bottom:17px}.prompt b{color:var(--lime);font-weight:500}.cursor{display:inline-block;width:8px;height:16px;background:var(--green);animation:blink .8s steps(1) infinite}@keyframes blink{50%{opacity:0}}.terminal{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px 0 20px;min-height:190px;color:var(--muted);font:12px/1.8 var(--mono)}.line{display:flex;gap:12px;white-space:nowrap;overflow:hidden}.line i{font-style:normal;color:var(--green)}.line.ok i{color:var(--lime)}.line span{overflow:hidden;text-overflow:ellipsis}.line b{margin-left:auto;color:var(--green);font-weight:500}.line.warn b{color:var(--pink)}.progress-wrap{margin-top:26px}.progress-meta{display:flex;justify-content:space-between;color:var(--muted);font:10px var(--mono);letter-spacing:.08em;margin-bottom:9px}.progress-meta strong{color:var(--green);font-weight:500}.progress{height:6px;background:oklch(22% .035 145);border-radius:999px;overflow:hidden}.progress i{display:block;width:0;height:100%;background:var(--green);box-shadow:0 0 18px var(--green);transition:width .35s var(--ease)}.boot-foot{display:flex;justify-content:space-between;gap:16px;color:var(--muted);font:10px var(--mono);margin-top:22px}.boot-foot span:last-child{color:var(--green)}.skip{position:fixed;right:18px;bottom:18px;background:transparent;color:var(--muted);font:10px var(--mono);padding:8px}.skip:hover{color:var(--lime)}.hint{margin-top:9px;color:var(--muted);font:10px var(--mono);opacity:.75}
+/* Tiny command-line easter egg */
+.hotkey{position:fixed;left:18px;bottom:18px;color:oklch(55% .035 145);font:10px var(--mono)}
+/* app reveal after boot */
+.app-ready .shell{animation:appIn .7s var(--ease) both}@keyframes appIn{from{opacity:0;transform:translateY(10px)}to{opacity:.98;transform:none}}
+@media(max-width:500px){.boot-core{padding:0}.boot-brand{margin-bottom:32px}.boot-mark{width:48px;height:48px}.boot-mark span{font-size:26px}.terminal{min-height:180px}.boot-foot{display:grid;gap:6px}.hotkey{display:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style></head>
+<body>
+<main class="shell" id="app">
+<header class="top"><div class="brand"><div class="mark"><span>⌁</span></div><div>GITHUB SCOUT<small>TELEGRAM MINI APP / PERSONAL RADAR</small></div></div><span class="mono" style="color:var(--green);font-size:10px">ONLINE</span></header>
+<section class="ghost-title"><p class="mono" style="color:var(--green);font-size:11px;letter-spacing:.14em">// YOUR OPEN SOURCE RADAR</p><h1>Твоя лента.<br><em>Твои находки.</em></h1><p>Проекты, которые хочется открыть, понять и сохранить.</p></section><div class="ghost-row"></div><div class="ghost-card"></div>
+</main>
+<section class="boot" id="boot" aria-label="Загрузка GitHub Scout">
+<div class="grid"></div><div class="scanline"></div><div class="noise"></div>
+<div class="boot-core">
+  <div class="boot-brand"><div class="boot-mark"><span>⌁</span></div><div class="boot-name">GITHUB SCOUT<small>PRIVATE OPEN-SOURCE RADAR</small></div></div>
+  <div class="prompt"><span>scout@telegram</span><b>:</b><span>~</span><b>$</b><span id="typed">initializing</span><span class="cursor"></span></div>
+  <div class="terminal" id="terminal" aria-live="polite"></div>
+  <div class="progress-wrap"><div class="progress-meta"><span>СИНХРОНИЗАЦИЯ ЛЕНТЫ</span><strong id="pct">00%</strong></div><div class="progress"><i id="bar"></i></div></div>
+  <div class="boot-foot"><span>ENCRYPTED LOCAL SESSION</span><span id="status">поднимаю радар...</span></div>
+  <div class="hint">нажми любую клавишу, чтобы пропустить загрузку</div>
+</div>
+<button class="skip" id="skip">ПРОПУСТИТЬ ↗</button><div class="hotkey">[SPACE] SKIP BOOT</div>
+</section>
+<script>
+'use strict';
+const boot=document.getElementById('boot'),app=document.body,bar=document.getElementById('bar'),pct=document.getElementById('pct'),status=document.getElementById('status'),terminal=document.getElementById('terminal'),typed=document.getElementById('typed');
+const steps=[
+ ['handshake','подключаю Telegram-сессию'],
+ ['identity','проверяю профиль пользователя'],
+ ['signal','собираю open-source сигналы'],
+ ['ranking','ранжирую находки под твой вкус'],
+ ['ready','радар готов']
+];
+let done=false,timers=[];
+function addLine(label,text,state=''){
+ const row=document.createElement('div');row.className='line '+state;row.innerHTML=`<i>${state==='ok'?'✓':'>'}</i><span>${label} :: ${text}</span><b>${state==='ok'?'OK':''}</b>`;terminal.appendChild(row);terminal.scrollTop=terminal.scrollHeight;
+}
+function finish(){if(done)return;done=true;timers.forEach(clearTimeout);bar.style.width='100%';pct.textContent='100%';status.textContent='система готова';typed.textContent='access_granted';addLine('boot','session ready','ok');setTimeout(()=>{boot.classList.add('exit');app.classList.add('app-ready');setTimeout(()=>boot.remove(),520)},360)}
+function run(){
+ let p=0;
+ steps.forEach((s,i)=>{timers.push(setTimeout(()=>{typed.textContent=s[1].replace(/ /g,'_');addLine(s[0],s[1]);},i*420+80));timers.push(setTimeout(()=>{const val=Math.min(100,Math.round(((i+1)/steps.length)*100));p=val;bar.style.width=val+'%';pct.textContent=String(val).padStart(2,'0')+'%';status.textContent=s[1]+'...';const last=terminal.lastElementChild;if(last){last.classList.add('ok');last.querySelector('i').textContent='✓';last.querySelector('b').textContent='OK'}},i*420+320))});timers.push(setTimeout(finish,steps.length*420+520));}
+run();
+document.getElementById('skip').onclick=finish;document.addEventListener('keydown',e=>{if(!done&&(e.code==='Space'||e.key==='Escape'||e.key.length===1))finish()},{once:false});
+</script></body></html>

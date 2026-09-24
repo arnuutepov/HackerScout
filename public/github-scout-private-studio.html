@@ -1,0 +1,2032 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>GitHub Scout // Private Studio</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+    /* Nuclear kill: any injected chrome/credit/overlay elements */
+    .design-ui-credit,
+    .artifact-editable::after,
+    .artifact-editable::before,
+    [class*="credit"],
+    [class*="clickup"],
+    [class*="brain-badge"],
+    [data-clickup],
+    [aria-hidden="true"][class*="credit"] {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      width: 0 !important;
+      height: 0 !important;
+      pointer-events: none !important;
+      position: absolute !important;
+      overflow: hidden !important;
+    }
+
+    :root {
+      --bg: oklch(12% .025 145);
+      --panel: oklch(16% .03 145);
+      --panel2: oklch(20% .035 145);
+      --line: oklch(29% .04 145);
+      --text: oklch(93% .025 145);
+      --muted: oklch(67% .035 145);
+      --green: oklch(82% .2 140);
+      --lime: oklch(88% .17 115);
+      --pink: oklch(76% .16 350);
+      --orange: oklch(80% .16 72);
+      --sans: 'Space Grotesk', system-ui, sans-serif;
+      --mono: 'IBM Plex Mono', monospace;
+      --ease: cubic-bezier(.16, 1, .3, 1)
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans)
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 90% 0%, oklch(26% .05 145 / .25), transparent 26rem), var(--bg);
+      font-weight: 350
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+      text-wrap: balance
+    }
+
+    button,
+    input {
+      font: inherit;
+      color: inherit
+    }
+
+    button {
+      border: 0;
+      cursor: pointer
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid var(--lime);
+      outline-offset: 3px
+    }
+
+    .mono {
+      font-family: var(--mono);
+      font-variant-numeric: tabular-nums
+    }
+
+    .app {
+      width: min(100%, 780px);
+      margin: auto;
+      padding: 14px 16px 108px
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2px 0 18px
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: .04em
+    }
+
+    .mark {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      background: var(--green);
+      color: var(--bg);
+      transform: rotate(45deg);
+      box-shadow: 0 0 25px oklch(70% .2 140 / .28)
+    }
+
+    .mark span {
+      transform: rotate(-45deg);
+      font: 600 18px var(--mono)
+    }
+
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font: 10px var(--mono);
+      letter-spacing: .13em;
+      margin-top: 3px;
+      font-weight: 400
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--green);
+      font: 10px var(--mono)
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 4px oklch(70% .2 140 / .12), 0 0 13px var(--green)
+    }
+
+    .profile {
+      background: transparent
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--green);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font: 11px var(--mono);
+      overflow: hidden
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .intro {
+      padding: 23px 0 20px;
+      border-top: 1px solid var(--line)
+    }
+
+    .eyebrow {
+      color: var(--green);
+      font: 500 11px var(--mono);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-bottom: 10px
+    }
+
+    .intro h1 {
+      font-size: clamp(34px, 8vw, 56px);
+      line-height: .97;
+      letter-spacing: -.065em;
+      max-width: 11ch
+    }
+
+    .intro h1 em {
+      font-style: normal;
+      color: var(--lime)
+    }
+
+    .intro p {
+      max-width: 54ch;
+      color: var(--muted);
+      line-height: 1.55;
+      margin-top: 15px;
+      font-size: 14px
+    }
+
+    .action-strip {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr 1fr;
+      gap: 8px;
+      margin: 2px 0 20px
+    }
+
+    .action {
+      min-height: 78px;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 7px;
+      padding: 13px;
+      transition: transform .2s var(--ease), border-color .2s var(--ease), background .2s var(--ease)
+    }
+
+    .action:hover {
+      transform: translateY(-2px);
+      border-color: var(--green);
+      background: var(--panel2)
+    }
+
+    .action.primary {
+      background: var(--lime);
+      color: var(--bg);
+      border-color: var(--lime)
+    }
+
+    .action b {
+      display: block;
+      font-size: 13px;
+      letter-spacing: -.02em
+    }
+
+    .action span {
+      display: block;
+      color: var(--muted);
+      font: 10px/1.4 var(--mono);
+      margin-top: 6px
+    }
+
+    .action.primary span {
+      color: oklch(22% .04 120)
+    }
+
+    .control {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      margin: 8px 0 17px
+    }
+
+    .search {
+      position: relative
+    }
+
+    .search input {
+      width: 100%;
+      height: 48px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      padding: 0 42px;
+      color: var(--text);
+      font: 13px var(--mono)
+    }
+
+    .search input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px oklch(70% .18 140 / .11);
+      outline: none
+    }
+
+    .search input::placeholder {
+      color: var(--muted)
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 14px;
+      color: var(--green);
+      font: 16px var(--mono)
+    }
+
+    .refresh {
+      min-width: 48px;
+      height: 48px;
+      background: var(--green);
+      color: var(--bg);
+      border-radius: 5px;
+      font: 18px var(--mono);
+      transition: transform .25s var(--ease)
+    }
+
+    .refresh:hover {
+      transform: rotate(30deg)
+    }
+
+    .refresh.loading {
+      animation: spin .8s linear infinite
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .hint {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font: 10px var(--mono);
+      margin: -5px 0 16px
+    }
+
+    .hint b {
+      color: var(--green);
+      font-weight: 500
+    }
+
+    .filters {
+      display: flex;
+      gap: 7px;
+      overflow: auto;
+      padding-bottom: 4px;
+      margin-bottom: 22px;
+      scrollbar-width: none
+    }
+
+    .filters::-webkit-scrollbar {
+      display: none
+    }
+
+    .filter {
+      white-space: nowrap;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: 11px var(--mono);
+      transition: all .15s var(--ease)
+    }
+
+    .filter:hover,
+    .filter.active {
+      color: var(--bg);
+      background: var(--green);
+      border-color: var(--green)
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      margin-bottom: 11px;
+      gap: 10px
+    }
+
+    .section-head h2 {
+      font-size: 18px;
+      letter-spacing: -.03em
+    }
+
+    .section-head span {
+      color: var(--muted);
+      font: 10px var(--mono)
+    }
+
+    .feed {
+      display: grid;
+      gap: 12px
+    }
+
+    .project {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform .25s var(--ease), border-color .25s var(--ease), background .25s var(--ease)
+    }
+
+    .project:hover {
+      transform: translateY(-2px);
+      border-color: oklch(54% .1 140);
+      background: var(--panel2)
+    }
+
+    .project-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 16px 16px 10px;
+      gap: 10px
+    }
+
+    .repo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0
+    }
+
+    .repo .avatar {
+      width: 28px;
+      height: 28px;
+      border-color: var(--line);
+      background: oklch(26% .04 145)
+    }
+
+    .repo-name {
+      font: 600 14px var(--mono);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .repo-name small {
+      display: block;
+      color: var(--muted);
+      font: 10px var(--mono);
+      font-weight: 400;
+      margin-top: 3px
+    }
+
+    .star {
+      background: oklch(27% .035 145);
+      color: var(--orange);
+      padding: 7px 9px;
+      border-radius: 999px;
+      font: 600 11px var(--mono);
+      white-space: nowrap
+    }
+
+    .project-body {
+      padding: 7px 16px 14px
+    }
+
+    .project-body h3 {
+      margin-bottom: 7px;
+      font-size: 19px;
+      letter-spacing: -.04em
+    }
+
+    .project-body p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      max-width: 64ch
+    }
+
+    .reason {
+      display: inline-block;
+      margin-top: 9px;
+      color: var(--green);
+      font: 10px var(--mono);
+      letter-spacing: .06em
+    }
+
+    .repo-link {
+      color: var(--pink);
+      font: 600 13px var(--mono);
+      display: block;
+      margin: 13px 0 14px;
+      word-break: break-all;
+      text-decoration: none
+    }
+
+    .project-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 11px;
+      border-top: 1px solid oklch(29% .03 145 / .7);
+      flex-wrap: wrap
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      color: var(--muted);
+      font: 10px var(--mono);
+      flex-wrap: wrap
+    }
+
+    .language {
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .lang-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--orange)
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+      align-items: center
+    }
+
+    .icon-btn {
+      width: 31px;
+      height: 31px;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      font: 14px var(--mono);
+      transition: all .15s var(--ease)
+    }
+
+    .icon-btn:hover,
+    .icon-btn.saved {
+      color: var(--lime);
+      border-color: var(--green);
+      background: oklch(70% .16 140 / .1)
+    }
+
+    .mini {
+      height: 31px;
+      padding: 0 10px;
+      border-radius: 4px;
+      background: var(--green);
+      color: var(--bg);
+      font: 600 10px var(--mono)
+    }
+
+    .badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--lime);
+      color: var(--bg);
+      padding: 5px 8px;
+      font: 600 9px var(--mono);
+      letter-spacing: .08em
+    }
+
+    .empty {
+      padding: 32px 18px;
+      color: var(--muted);
+      font: 12px var(--mono);
+      border: 1px dashed var(--line);
+      text-align: center;
+      border-radius: 8px
+    }
+
+    .empty b {
+      display: block;
+      color: var(--text);
+      font: 600 16px var(--sans);
+      margin-bottom: 8px
+    }
+
+    .skeleton {
+      height: 250px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(90deg, var(--panel), var(--panel2), var(--panel));
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite
+    }
+
+    @keyframes shimmer {
+      to {
+        background-position: -200% 0
+      }
+    }
+
+    .bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: oklch(12% .025 145 / .96);
+      border-top: 1px solid var(--line);
+      padding: 10px max(16px, calc((100vw - 748px)/2)) 12px;
+      z-index: 4
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-around
+    }
+
+    .nav button {
+      position: relative;
+      background: transparent;
+      color: var(--muted);
+      display: grid;
+      gap: 4px;
+      place-items: center;
+      font: 10px var(--mono);
+      min-width: 70px
+    }
+
+    .nav button b {
+      font-size: 18px;
+      font-weight: 400
+    }
+
+    .nav button.active {
+      color: var(--green)
+    }
+
+    .count {
+      position: absolute;
+      top: -5px;
+      right: 12px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: var(--pink);
+      color: var(--bg);
+      font: 600 9px/16px var(--mono)
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 79px;
+      transform: translate(-50%, 150%);
+      background: var(--lime);
+      color: var(--bg);
+      padding: 11px 14px;
+      font: 600 11px var(--mono);
+      z-index: 70;
+      transition: transform .3s var(--ease);
+      white-space: nowrap;
+      max-width: 92vw;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .toast.show {
+      transform: translate(-50%, 0)
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: oklch(8% .02 145 / .84);
+      display: none;
+      align-items: end;
+      justify-content: center;
+      z-index: 30;
+      padding: 12px
+    }
+
+    .modal.open {
+      display: flex
+    }
+
+    .sheet {
+      width: min(100%, 580px);
+      max-height: 90vh;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px 12px 4px 4px;
+      padding: 21px 18px 18px;
+      animation: up .35s var(--ease)
+    }
+
+    @keyframes up {
+      from {
+        transform: translateY(25px);
+        opacity: 0
+      }
+    }
+
+    .sheet-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start
+    }
+
+    .sheet h2 {
+      font-size: 22px;
+      letter-spacing: -.04em
+    }
+
+    .sheet p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      margin-top: 8px
+    }
+
+    .x {
+      background: transparent;
+      color: var(--muted);
+      font: 18px var(--mono)
+    }
+
+    .sheet-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px
+    }
+
+    .primary-btn {
+      flex: 1;
+      background: var(--green);
+      color: var(--bg);
+      border-radius: 4px;
+      padding: 12px;
+      font-weight: 700
+    }
+
+    .cancel {
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 12px;
+      color: var(--muted);
+      font: 11px var(--mono)
+    }
+
+    .chip-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px
+    }
+
+    .chip {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 12px;
+      font: 11px var(--mono);
+      transition: all .15s var(--ease)
+    }
+
+    .chip.on {
+      background: var(--green);
+      color: var(--bg);
+      border-color: var(--green)
+    }
+
+    .list {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px
+    }
+
+    .list button {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 13px
+    }
+
+    .list button:hover {
+      border-color: var(--green)
+    }
+
+    .list strong {
+      display: block;
+      font-size: 13px
+    }
+
+    .list span {
+      display: block;
+      color: var(--muted);
+      font: 10px var(--mono);
+      margin-top: 4px
+    }
+
+    .list i {
+      color: var(--lime);
+      font-style: normal;
+      font-size: 18px
+    }
+
+    .note {
+      margin-top: 16px;
+      background: oklch(20% .035 145);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 12px 13px;
+      color: var(--muted);
+      font: 11px/1.5 var(--mono)
+    }
+
+    .share-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 20px
+    }
+
+    .share-options button {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel2);
+      padding: 15px 8px;
+      color: var(--text);
+      font: 11px var(--mono)
+    }
+
+    .share-options button:hover {
+      border-color: var(--green);
+      color: var(--green)
+    }
+
+    @media(max-width:580px) {
+      .action-strip {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .action:first-child {
+        grid-column: 1/-1
+      }
+
+      .action {
+        min-height: 70px
+      }
+    }
+
+    @media(min-width:640px) {
+      .app {
+        padding-top: 22px
+      }
+
+      .feed {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .project:first-child {
+        grid-column: 1/-1
+      }
+
+      .project:first-child .project-body h3 {
+        font-size: 24px
+      }
+    }
+
+    @media(max-width:430px) {
+      .status span {
+        display: none
+      }
+    }
+
+    /* ===== BOOT SCREEN STYLES ===== */
+    .boot {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      background: var(--bg);
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      transition: opacity .45s var(--ease), transform .6s var(--ease)
+    }
+
+    .boot.exit {
+      opacity: 0;
+      transform: scale(1.02);
+      pointer-events: none
+    }
+
+    .grid {
+      position: absolute;
+      inset: 0;
+      opacity: .24;
+      background-image: linear-gradient(oklch(70% .12 140 / .08) 1px, transparent 1px), linear-gradient(90deg, oklch(70% .12 140 / .08) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(ellipse at center, black 0%, transparent 76%);
+      animation: gridMove 20s linear infinite
+    }
+
+    @keyframes gridMove {
+      to {
+        background-position: 44px 44px
+      }
+    }
+
+    .scanline {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent 0 4px, oklch(100% .01 140 / .035) 5px);
+      mix-blend-mode: screen;
+      opacity: .5
+    }
+
+    .noise {
+      position: absolute;
+      inset: -50%;
+      pointer-events: none;
+      opacity: .045;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+      animation: noise .2s steps(2) infinite
+    }
+
+    @keyframes noise {
+      0% {
+        transform: translate(0)
+      }
+
+      25% {
+        transform: translate(3%, -2%)
+      }
+
+      50% {
+        transform: translate(-2%, 3%)
+      }
+
+      75% {
+        transform: translate(2%, 2%)
+      }
+
+      100% {
+        transform: translate(-3%, -1%)
+      }
+    }
+
+    .boot-core {
+      position: relative;
+      width: min(100%, 620px);
+      padding: 10px
+    }
+
+    .boot-brand {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 44px
+    }
+
+    .boot-mark {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      background: var(--green);
+      color: var(--bg);
+      transform: rotate(45deg);
+      box-shadow: 0 0 48px oklch(70% .2 140 / .32);
+      animation: pulse 2.2s ease-in-out infinite
+    }
+
+    .boot-mark span {
+      transform: rotate(-45deg);
+      font: 600 31px var(--mono)
+    }
+
+    @keyframes pulse {
+      50% {
+        box-shadow: 0 0 75px oklch(70% .2 140 / .5)
+      }
+    }
+
+    .boot-name {
+      font-size: clamp(22px, 5vw, 32px);
+      font-weight: 700;
+      letter-spacing: .04em
+    }
+
+    .boot-name small {
+      display: block;
+      color: var(--muted);
+      font: 11px var(--mono);
+      letter-spacing: .15em;
+      margin-top: 7px
+    }
+
+    .prompt {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--green);
+      font: 13px var(--mono);
+      margin-bottom: 17px
+    }
+
+    .prompt b {
+      color: var(--lime);
+      font-weight: 500
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 16px;
+      background: var(--green);
+      animation: blink .8s steps(1) infinite
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0
+      }
+    }
+
+    .terminal {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 18px 0 20px;
+      min-height: 190px;
+      color: var(--muted);
+      font: 12px/1.8 var(--mono)
+    }
+
+    .line {
+      display: flex;
+      gap: 12px;
+      white-space: nowrap;
+      overflow: hidden
+    }
+
+    .line i {
+      font-style: normal;
+      color: var(--green)
+    }
+
+    .line.ok i {
+      color: var(--lime)
+    }
+
+    .line span {
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .line b {
+      margin-left: auto;
+      color: var(--green);
+      font-weight: 500
+    }
+
+    .line.warn b {
+      color: var(--pink)
+    }
+
+    .progress-wrap {
+      margin-top: 26px
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font: 10px var(--mono);
+      letter-spacing: .08em;
+      margin-bottom: 9px
+    }
+
+    .progress-meta strong {
+      color: var(--green);
+      font-weight: 500
+    }
+
+    .progress {
+      height: 6px;
+      background: oklch(22% .035 145);
+      border-radius: 999px;
+      overflow: hidden
+    }
+
+    .progress i {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: var(--green);
+      box-shadow: 0 0 18px var(--green);
+      transition: width .35s var(--ease)
+    }
+
+    .boot-foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--muted);
+      font: 10px var(--mono);
+      margin-top: 22px
+    }
+
+    .boot-foot span:last-child {
+      color: var(--green)
+    }
+
+    .skip {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      background: transparent;
+      color: var(--muted);
+      font: 10px var(--mono);
+      padding: 8px;
+      z-index: 11
+    }
+
+    .skip:hover {
+      color: var(--lime)
+    }
+
+    .boot-hint {
+      margin-top: 9px;
+      color: var(--muted);
+      font: 10px var(--mono);
+      opacity: .75
+    }
+
+    .hotkey {
+      position: fixed;
+      left: 18px;
+      bottom: 18px;
+      color: oklch(55% .035 145);
+      font: 10px var(--mono);
+      z-index: 11
+    }
+
+    /* Hide main app during boot */
+    .app-booting .app {
+      opacity: 0;
+      transform: translateY(12px)
+    }
+
+    .app-booted .app {
+      animation: appReveal .7s var(--ease) both
+    }
+
+    @keyframes appReveal {
+      from {
+        opacity: 0;
+        transform: translateY(12px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .app-booting .bottom {
+      opacity: 0
+    }
+
+    .app-booted .bottom {
+      animation: appReveal .7s var(--ease) .1s both
+    }
+
+    @media(max-width:500px) {
+      .boot-core {
+        padding: 0
+      }
+
+      .boot-brand {
+        margin-bottom: 32px
+      }
+
+      .boot-mark {
+        width: 48px;
+        height: 48px
+      }
+
+      .boot-mark span {
+        font-size: 26px
+      }
+
+      .terminal {
+        min-height: 180px
+      }
+
+      .boot-foot {
+        display: grid;
+        gap: 6px
+      }
+
+      .hotkey {
+        display: none
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+
+      .boot *,
+      .boot *::before,
+      .boot *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important
+      }
+    }
+
+    /* ===== CHANNEL SUBSCRIPTION GATE ===== */
+    .sub-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: var(--bg);
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      transition: opacity .5s var(--ease), transform .5s var(--ease);
+    }
+    .sub-gate.exit {
+      opacity: 0;
+      transform: scale(1.03);
+      pointer-events: none;
+    }
+    .sub-gate-core {
+      text-align: center;
+      max-width: 420px;
+    }
+    .sub-gate-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 28px;
+      display: grid;
+      place-items: center;
+      background: var(--green);
+      color: var(--bg);
+      transform: rotate(45deg);
+      box-shadow: 0 0 60px oklch(70% .2 140 / .35);
+      animation: pulse 2.2s ease-in-out infinite;
+    }
+    .sub-gate-icon span {
+      transform: rotate(-45deg);
+      font: 600 36px var(--mono);
+    }
+    .sub-gate h2 {
+      font-size: clamp(24px, 5vw, 36px);
+      letter-spacing: -.04em;
+      margin-bottom: 12px;
+    }
+    .sub-gate h2 em {
+      font-style: normal;
+      color: var(--lime);
+    }
+    .sub-gate p {
+      color: var(--muted);
+      font: 13px/1.6 var(--mono);
+      margin-bottom: 28px;
+      max-width: 36ch;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .sub-gate-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--green);
+      color: var(--bg);
+      font: 600 13px var(--mono);
+      padding: 14px 28px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+      text-decoration: none;
+    }
+    .sub-gate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px oklch(70% .2 140 / .3);
+    }
+    .sub-gate-check {
+      display: block;
+      margin-top: 16px;
+      background: transparent;
+      color: var(--muted);
+      font: 11px var(--mono);
+      border: 1px solid var(--line);
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all .15s var(--ease);
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .sub-gate-check:hover {
+      color: var(--lime);
+      border-color: var(--green);
+    }
+    .sub-gate-status {
+      margin-top: 14px;
+      font: 10px var(--mono);
+      color: var(--pink);
+      min-height: 16px;
+    }
+    .sub-gate-note {
+      margin-top: 24px;
+      color: oklch(50% .03 145);
+      font: 10px var(--mono);
+      letter-spacing: .06em;
+    }
+
+    /* ===== HACKER MODE ===== */
+    .hacker-active {
+      --bg: oklch(6% .03 145) !important;
+      --green: oklch(85% .22 130) !important;
+      --lime: oklch(90% .2 110) !important;
+    }
+    .hacker-active .app {
+      position: relative;
+    }
+    .hacker-active .app::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent 0 3px, oklch(70% .15 140 / .03) 4px);
+      z-index: 99;
+      mix-blend-mode: screen;
+    }
+    .hacker-terminal {
+      position: fixed;
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      width: min(94vw, 600px);
+      background: oklch(8% .03 145);
+      border: 1px solid var(--green);
+      border-radius: 8px;
+      z-index: 50;
+      transition: transform .35s var(--ease);
+      box-shadow: 0 0 40px oklch(70% .2 140 / .2), inset 0 0 60px oklch(70% .2 140 / .05);
+    }
+    .hacker-terminal.open {
+      transform: translateX(-50%) translateY(0);
+    }
+    .hacker-terminal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid oklch(30% .04 145);
+      font: 10px var(--mono);
+      color: var(--green);
+    }
+    .hacker-terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .hacker-terminal-dots i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      font-style: normal;
+    }
+    .hacker-terminal-dots i:nth-child(1) { background: var(--pink); }
+    .hacker-terminal-dots i:nth-child(2) { background: var(--orange); }
+    .hacker-terminal-dots i:nth-child(3) { background: var(--green); }
+    .hacker-terminal-body {
+      padding: 12px 14px;
+      max-height: 200px;
+      overflow-y: auto;
+      font: 11px/1.7 var(--mono);
+      color: var(--muted);
+      scrollbar-width: thin;
+      scrollbar-color: var(--green) transparent;
+    }
+    .hacker-terminal-body .h-line {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hacker-terminal-body .h-line i {
+      color: var(--green);
+      font-style: normal;
+      margin-right: 8px;
+    }
+    .hacker-terminal-body .h-line.success i { color: var(--lime); }
+    .hacker-terminal-body .h-line.error i { color: var(--pink); }
+    .hacker-terminal-input {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-top: 1px solid oklch(30% .04 145);
+      color: var(--green);
+      font: 12px var(--mono);
+    }
+    .hacker-terminal-input input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--lime);
+      font: 12px var(--mono);
+      outline: none;
+    }
+    .hacker-terminal-input input::placeholder {
+      color: oklch(45% .03 145);
+    }
+    .hacker-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--green), var(--lime), var(--green), transparent);
+      z-index: 98;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .hacker-active .hacker-glow {
+      opacity: 1;
+      animation: glowPulse 2s ease-in-out infinite;
+    }
+    @keyframes glowPulse {
+      0%, 100% { opacity: .4; }
+      50% { opacity: 1; }
+    }
+    .matrix-char {
+      position: fixed;
+      color: var(--green);
+      font: 12px var(--mono);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 97;
+      animation: matrixFall linear forwards;
+    }
+    @keyframes matrixFall {
+      0% { opacity: .8; transform: translateY(0); }
+      80% { opacity: .3; }
+      100% { opacity: 0; transform: translateY(100vh); }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- ===== CHANNEL SUBSCRIPTION GATE ===== -->
+  <section class="sub-gate" id="subGate">
+    <div class="sub-gate-core">
+      <div class="sub-gate-icon"><span>⌁</span></div>
+      <h2>Подпишись на<br><em>канал Scout</em></h2>
+      <p>Чтобы пользоваться радаром, нужно быть подписанным на канал. Это бесплатно.</p>
+      <a class="sub-gate-btn" href="https://t.me/codrng" target="_blank" id="subLink">
+        ПОДПИСАТЬСЯ НА КАНАЛ ↗
+      </a>
+      <button class="sub-gate-check" id="subCheck">Я УЖЕ ПОДПИСАН · ПРОВЕРИТЬ</button>
+      <div class="sub-gate-status" id="subStatus"></div>
+      <div class="sub-gate-note">GITHUB SCOUT · PRIVATE RADAR · v2.0</div>
+    </div>
+  </section>
+
+
+  <!-- ===== BOOT SCREEN OVERLAY ===== -->
+  <section class="boot" id="boot" aria-label="Загрузка GitHub Scout">
+    <div class="grid"></div>
+    <div class="scanline"></div>
+    <div class="noise"></div>
+    <div class="boot-core">
+      <div class="boot-brand">
+        <div class="boot-mark"><span>⌁</span></div>
+        <div class="boot-name">GITHUB SCOUT<small>PRIVATE OPEN-SOURCE RADAR</small></div>
+      </div>
+      <div class="prompt"><span>scout@telegram</span><b>:</b><span>~</span><b>$</b><span
+          id="typed">initializing</span><span class="cursor"></span></div>
+      <div class="terminal" id="terminal" aria-live="polite"></div>
+      <div class="progress-wrap">
+        <div class="progress-meta"><span>СИНХРОНИЗАЦИЯ ЛЕНТЫ</span><strong id="pct">00%</strong></div>
+        <div class="progress"><i id="bar"></i></div>
+      </div>
+      <div class="boot-foot"><span>ENCRYPTED LOCAL SESSION</span><span id="bootStatus">поднимаю радар...</span></div>
+      <div class="boot-hint">нажми любую клавишу, чтобы пропустить загрузку</div>
+    </div>
+    <button class="skip" id="skip">ПРОПУСТИТЬ ↗</button>
+    <div class="hotkey">[SPACE] SKIP BOOT</div>
+  </section>
+
+  <main class="app">
+    <header class="top">
+      <div class="brand">
+        <div class="mark"><span>⌁</span></div>
+        <div>GITHUB SCOUT<small>TELEGRAM MINI APP / PERSONAL RADAR</small></div>
+      </div>
+      <div class="status"><i class="dot"></i><span id="authState">DEMO MODE</span><button class="profile"
+          id="profile"><span class="avatar" id="userAvatar">AU</span></button></div>
+    </header>
+    <section class="intro">
+      <p class="eyebrow">// find something worth building</p>
+      <h1>Гитхаб без<br><em>информационного шума.</em></h1>
+      <p>Не только лента. Scout помогает найти идею, быстро понять проект и сохранить то, к чему стоит вернуться.</p>
+    </section>
+    <section class="action-strip"><button class="action primary" id="discoverBtn"><b>Найти идею</b><span>рандомная
+          находка под твой вкус</span></button><button class="action" id="stackBtn"><b>Мой стек</b><span>проекты под
+          выбранные технологии</span></button><button class="action" id="briefBtn"><b>Объясни проще</b><span>перевести
+          техно-язык в нормальный</span></button></section>
+    <div class="control"><label class="search"><span class="search-icon">⌕</span><input id="search"
+          placeholder="найти проект, стек или тему..." autocomplete="off"></label><button class="refresh"
+        id="refresh">↻</button></div>
+    <div class="hint"><span>Источник: <b id="sourceLabel">GitHub Public API</b></span><span
+        id="updated">синхронизация...</span></div>
+    <nav class="filters"><button class="filter active" data-filter="all">ДЛЯ ТЕБЯ</button><button class="filter"
+        data-filter="ai">AI / AGENTS</button><button class="filter" data-filter="security">SECURITY</button><button
+        class="filter" data-filter="tools">DEV TOOLS</button><button class="filter" data-filter="python">PYTHON</button>
+    </nav>
+    <div class="section-head">
+      <h2 id="feedTitle">Подобрано для тебя</h2><span id="count">-- PROJECTS</span>
+    </div>
+    <section class="feed" id="feed">
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+    </section>
+  </main>
+  <nav class="bottom">
+    <div class="nav"><button class="active" id="radarTab"><b>⌂</b>РАДАР</button><button id="savedTab"><b>♡</b><span
+          class="count" id="savedCount" hidden>0</span>СОХРАНЁННЫЕ</button><button
+        id="historyTab"><b>↺</b>ИСТОРИЯ</button><button id="profileTab"><b>⚙</b>ПРОФИЛЬ</button></div>
+  </nav>
+
+  <!-- ===== HACKER MODE ===== -->
+  <div class="hacker-glow" id="hackerGlow"></div>
+  <div class="hacker-terminal" id="hackerTerminal">
+    <div class="hacker-terminal-head">
+      <div class="hacker-terminal-dots"><i></i><i></i><i></i></div>
+      <span>scout@hacker ~ $</span>
+      <button style="background:transparent;color:var(--muted);font:12px var(--mono);border:0;cursor:pointer" id="hackerClose">✕</button>
+    </div>
+    <div class="hacker-terminal-body" id="hackerBody"></div>
+    <div class="hacker-terminal-input">
+      <span>❯</span>
+      <input id="hackerInput" placeholder="введи команду..." autocomplete="off">
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="modal" id="profileModal">
+    <section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>Профиль</h2>
+          <p>Настройки, которые меняют выдачу, а не просто занимают место.</p>
+        </div><button class="x" data-close="profileModal">✕</button>
+      </div>
+      <div class="list"><button id="topicsBtn"><i>⌁</i>
+          <div><strong>Темы и интересы</strong><span id="topicSummary">универсальная подборка</span></div>
+        </button><button id="sortBtn"><i>↕</i>
+          <div><strong>Режим сортировки</strong><span id="sortSummary">сначала то, что подходит</span></div>
+        </button><button id="resetBtn"><i>↺</i>
+          <div><strong>Сбросить вкус</strong><span>начать настройку заново</span></div>
+        </button></div>
+      <div class="note">Slide Studio не отображается в этом интерфейсе. Это приватный рабочий инструмент владельца.
+      </div>
+    </section>
+  </div>
+  <div class="modal" id="topicsModal">
+    <section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>Темы</h2>
+          <p>Отметь, что хочешь видеть чаще.</p>
+        </div><button class="x" data-close="topicsModal">✕</button>
+      </div>
+      <div class="chip-grid" id="topics"></div>
+      <div class="sheet-actions"><button class="cancel" data-close="topicsModal">ОТМЕНА</button><button
+          class="primary-btn" id="saveTopics">СОХРАНИТЬ</button></div>
+    </section>
+  </div>
+  <div class="modal" id="sortModal">
+    <section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>Как сортировать?</h2>
+          <p>Один режим по умолчанию, можно сменить в любой момент.</p>
+        </div><button class="x" data-close="sortModal">✕</button>
+      </div>
+      <div class="list"><button data-sort="fit"><i>✦</i>
+          <div><strong>Попадание</strong><span>сначала проекты под твои интересы</span></div>
+        </button><button data-sort="fresh"><i>↗</i>
+          <div><strong>Свежее</strong><span>новые и активно обновляемые</span></div>
+        </button><button data-sort="stars"><i>★</i>
+          <div><strong>Звёзды</strong><span>сначала самые популярные</span></div>
+        </button></div>
+    </section>
+  </div>
+  <div class="modal" id="savedModal">
+    <section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>Сохранённые</h2>
+          <p>Вернись к находкам, когда будет время.</p>
+        </div><button class="x" data-close="savedModal">✕</button>
+      </div>
+      <div class="note" id="savedInfo"></div>
+      <div class="sheet-actions"><button class="cancel" data-close="savedModal">ЗАКРЫТЬ</button><button
+          class="primary-btn" id="showSaved">ПОКАЗАТЬ</button></div>
+    </section>
+  </div>
+  <div class="modal" id="historyModal">
+    <section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>История</h2>
+          <p>Недавно открытые проекты, чтобы не искать второй раз.</p>
+        </div><button class="x" data-close="historyModal">✕</button>
+      </div>
+      <div class="note" id="historyInfo"></div>
+      <div class="sheet-actions"><button class="cancel" data-close="historyModal">ЗАКРЫТЬ</button><button
+          class="primary-btn" id="clearHistory">ОЧИСТИТЬ</button></div>
+    </section>
+  </div>
+  <div class="modal" id="shareModal">
+    <section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>Поделиться</h2>
+          <p id="shareText"></p>
+        </div><button class="x" data-close="shareModal">✕</button>
+      </div>
+      <div class="share-options"><button id="copyLink">КОПИРОВАТЬ</button><button id="tgShare">TELEGRAM</button><button
+          id="nativeShare">ЕЩЁ</button></div>
+    </section>
+  </div>
+  <div class="modal" id="briefModal">
+    <section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>Объяснение</h2>
+          <p id="briefText"></p>
+        </div><button class="x" data-close="briefModal">✕</button>
+      </div>
+      <div class="note">Scout убирает маркетинговый язык, оставляет практический смысл и показывает, кому проект реально
+        пригодится.</div>
+    </section>
+  </div>
+
+  <!-- ВАЖНО: этот блок существует только после серверной/Telegram проверки владельца. Для остальных пользователей DOM-элемента студии нет. -->
+  <script>
+
+    /* ===== CHROME CLEANER: kill any injected UI overlays ===== */
+    (function() {
+      function killChrome() {
+        document.querySelectorAll('.design-ui-credit, [class*="credit"], [class*="clickup"], [class*="brain"]').forEach(function(el) {
+          el.remove();
+        });
+        document.body.classList.remove('artifact-editable');
+      }
+      killChrome();
+      // Watch for re-injection
+      new MutationObserver(function(muts) {
+        muts.forEach(function(m) {
+          m.addedNodes.forEach(function(n) {
+            if (n.nodeType === 1 && (n.classList?.contains('design-ui-credit') || n.className?.includes?.('credit') || n.className?.includes?.('clickup'))) {
+              n.remove();
+            }
+          });
+        });
+      }).observe(document.body, { childList: true, subtree: true });
+    })();
+
+    /* ===== BOOT SEQUENCE ===== */
+    (function () {
+      'use strict';
+      document.body.classList.add('app-booting');
+      const boot = document.getElementById('boot'), bar = document.getElementById('bar'), pct = document.getElementById('pct'), bootStatus = document.getElementById('bootStatus'), terminal = document.getElementById('terminal'), typed = document.getElementById('typed');
+      const steps = [
+        ['handshake', 'подключаю Telegram-сессию'],
+        ['identity', 'проверяю профиль пользователя'],
+        ['signal', 'собираю open-source сигналы'],
+        ['ranking', 'ранжирую находки под твой вкус'],
+        ['ready', 'радар готов']
+      ];
+      let done = false, timers = [];
+      function addLine(label, text, state = '') {
+        const row = document.createElement('div'); row.className = 'line ' + state; row.innerHTML = '<i>' + (state === 'ok' ? '✓' : '>') + '</i><span>' + label + ' :: ' + text + '</span><b>' + (state === 'ok' ? 'OK' : '') + '</b>'; terminal.appendChild(row); terminal.scrollTop = terminal.scrollHeight;
+      }
+      function finish() { if (done) return; done = true; timers.forEach(clearTimeout); bar.style.width = '100%'; pct.textContent = '100%'; bootStatus.textContent = 'система готова'; typed.textContent = 'access_granted'; addLine('boot', 'session ready', 'ok'); setTimeout(function () { boot.classList.add('exit'); document.body.classList.remove('app-booting'); document.body.classList.add('app-booted'); setTimeout(function () { boot.remove() }, 520) }, 360) }
+      window.__bootFinish = finish;
+      function run() {
+        steps.forEach(function (s, i) { timers.push(setTimeout(function () { typed.textContent = s[1].replace(/ /g, '_'); addLine(s[0], s[1]); }, i * 420 + 80)); timers.push(setTimeout(function () { var val = Math.min(100, Math.round(((i + 1) / steps.length) * 100)); bar.style.width = val + '%'; pct.textContent = String(val).padStart(2, '0') + '%'; bootStatus.textContent = s[1] + '...'; var last = terminal.lastElementChild; if (last) { last.classList.add('ok'); last.querySelector('i').textContent = '✓'; last.querySelector('b').textContent = 'OK' } }, i * 420 + 320)) }); timers.push(setTimeout(finish, steps.length * 420 + 520));
+      }
+      run();
+      document.getElementById('skip').onclick = finish; document.addEventListener('keydown', function (e) { if (!done && (e.code === 'Space' || e.key === 'Escape' || e.key.length === 1)) finish() });
+    })();
+
+    'use strict';
+    const $ = id => document.getElementById(id), esc = s => String(s || '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c])), fmt = n => n >= 1000 ? (n / 1000).toFixed(1).replace('.0', '') + 'K' : String(n), pad = n => String(n).padStart(2, '0');
+    const tg = window.Telegram?.WebApp; let repos = [], visible = [], active = 'all', sortMode = localStorage.sortMode || 'fit', interests = JSON.parse(localStorage.interests || '[]'), shareItem = null, history = JSON.parse(localStorage.scoutHistory || '[]');
+    const map = { ai: ['ai', 'agents', 'llm', 'machine-learning'], security: ['security', 'devsecops', 'secrets', 'vulnerability'], tools: ['developer-tools', 'cli', 'workflow', 'productivity'], python: ['python'], javascript: ['javascript', 'typescript'], design: ['design', 'ui', 'frontend'], automation: ['automation', 'workflow', 'bot'], rust: ['rust'] };
+    const lead = { ai: ['ИИ-инструмент, который делает работу, а не просто говорит.', 'Агент для тех случаев, где обычный чат уже не вывозит.'], security: ['Находит то, что обычно всплывает слишком поздно.', 'Полезная проверка до того, как секрет окажется в проде.'], tools: ['Инструмент, который убирает пару шагов из каждого цикла.', 'Маленькая команда, заметно меньше ручной работы.'], automation: ['Собирает рутину в один поток и запускает его без тебя.', 'Связывает сервисы без склейки на коленке.'], other: ['Небольшой проект, который решает одну задачу хорошо.', 'Находка из тех, что тихо экономят время.'] };
+    const tail = { ai: 'Понимает контекст проекта и не требует ручного промпт-инжиниринга.', security: 'Даёт понятный отчёт, а не стену логов.', tools: 'Запустил и поехал, без конфига на сотню строк.', automation: 'Логи и расписание уже внутри.', other: 'Ставится быстро и легко проверяется на своём коде.' };
+    const DEMO = [{ full_name: 'aider-ai/aider', name: 'aider', owner: { login: 'aider-ai', avatar_url: '' }, description: 'AI pair programming in your terminal', stargazers_count: 34200, language: 'Python', license: { spdx_id: 'Apache-2.0' }, html_url: 'https://github.com/aider-ai/aider', topics: ['ai', 'agents', 'cli', 'python'] }, { full_name: 'trufflesecurity/trufflehog', name: 'trufflehog', owner: { login: 'trufflesecurity', avatar_url: '' }, description: 'Find, verify, and analyze leaked credentials', stargazers_count: 18700, language: 'Go', license: { spdx_id: 'AGPL-3.0' }, html_url: 'https://github.com/trufflesecurity/trufflehog', topics: ['security', 'devsecops', 'secrets'] }, { full_name: 'zed-industries/zed', name: 'zed', owner: { login: 'zed-industries', avatar_url: '' }, description: 'Code at the speed of thought', stargazers_count: 59800, language: 'Rust', license: { spdx_id: 'GPL-3.0' }, html_url: 'https://github.com/zed-industries/zed', topics: ['rust', 'developer-tools', 'design'] }, { full_name: 'n8n-io/n8n', name: 'n8n', owner: { login: 'n8n-io', avatar_url: '' }, description: 'Workflow automation with native AI capabilities', stargazers_count: 48300, language: 'TypeScript', license: { spdx_id: 'Fair-code' }, html_url: 'https://github.com/n8n-io/n8n', topics: ['automation', 'workflow', 'bot'] }, { full_name: 'pydantic/pydantic-ai', name: 'pydantic-ai', owner: { login: 'pydantic', avatar_url: '' }, description: 'Agent framework built on Pydantic', stargazers_count: 9400, language: 'Python', license: { spdx_id: 'MIT' }, html_url: 'https://github.com/pydantic/pydantic-ai', topics: ['ai', 'llm', 'agents'] }];
+    function note(t) { const x = $('toast'); x.textContent = t; x.classList.add('show'); clearTimeout(window.__t); window.__t = setTimeout(() => x.classList.remove('show'), 2400); tg?.HapticFeedback?.impactOccurred?.('light') }
+    function cat(r) { const s = ((r.topics || []).join(' ') + ' ' + r.name).toLowerCase(); for (const [k, v] of Object.entries(map)) if (v.some(x => s.includes(x))) return k; return 'other' }
+    function explain(r) { const c = cat(r), arr = lead[c] || lead.other; return `${arr[(r.stargazers_count || 0) % arr.length]} ${tail[c] || tail.other} ${fmt(r.stargazers_count)} звёзд.` }
+    function rank(a, b) { if (sortMode === 'stars') return b.stargazers_count - a.stargazers_count; if (sortMode === 'fresh') return String(b.pushed_at || '').localeCompare(String(a.pushed_at || '')); return 0 }
+    function matches(r) { const q = $('search').value.trim().toLowerCase(), tags = ((r.topics || []).join(' ') + ' ' + r.language + ' ' + r.name).toLowerCase(); if (q) return (r.full_name + ' ' + r.description + ' ' + tags).toLowerCase().includes(q); if (active === 'all') { const w = interests.flatMap(x => map[x] || []); return !w.length || w.some(x => tags.includes(x)) } return tags.includes(active) || (map[active] || []).some(x => tags.includes(x)) }
+    function card(r, i) { const saved = JSON.parse(localStorage.savedRepos || '[]').includes(r.html_url); const av = r.owner.avatar_url ? `<img src="${esc(r.owner.avatar_url)}">` : esc(r.owner.login.slice(0, 2).toUpperCase()); return `<article class="project"><span class="badge">${i === 0 ? 'TOP MATCH' : 'LIVE'}</span><div class="project-top"><div class="repo"><div class="avatar">${av}</div><div class="repo-name">${esc(r.full_name)}<small>${esc(r.owner.login)} / ${esc(r.language || 'open source')}</small></div></div><span class="star">★ ${fmt(r.stargazers_count)}</span></div><div class="project-body"><h3>${esc(r.name)}</h3><p>${esc(explain(r))}</p><span class="reason">// ПОЧЕМУ ТЕБЕ МОЖЕТ ЗАЙТИ</span><a class="repo-link" href="${esc(r.html_url)}" target="_blank">${esc(r.html_url.replace('https://', ''))} ↗</a><div class="project-foot"><div class="meta"><span class="language"><i class="lang-dot"></i>${esc(r.language || 'Other')}</span><span>${esc(r.license?.spdx_id || 'Open source')}</span></div><div class="actions"><button class="mini brief" data-url="${esc(r.html_url)}">ПОЧЕМУ</button><button class="icon-btn save ${saved ? 'saved' : ''}" data-url="${esc(r.html_url)}">${saved ? '♥' : '♡'}</button><button class="icon-btn share" data-url="${esc(r.html_url)}" data-name="${esc(r.name)}">↗</button></div></div></div></article>` }
+    function render() { visible = repos.filter(matches).sort(rank); $('count').textContent = pad(visible.length) + ' PROJECTS'; $('feed').innerHTML = visible.length ? visible.map(card).join('') : `<div class="empty"><b>Лента пустая</b>Попробуй снять фильтр или выбрать ещё одну тему.</div>`; bind(); syncSaved() }
+    function bind() { document.querySelectorAll('.save').forEach(b => b.onclick = () => { let s = JSON.parse(localStorage.savedRepos || '[]'), u = b.dataset.url; s = s.includes(u) ? s.filter(x => x !== u) : [...s, u]; localStorage.savedRepos = JSON.stringify(s); note(s.includes(u) ? 'СОХРАНЕНО' : 'УДАЛЕНО'); render() }); document.querySelectorAll('.share').forEach(b => b.onclick = () => { shareItem = { url: b.dataset.url, name: b.dataset.name }; $('shareText').textContent = b.dataset.name + ' · выбери способ отправки'; $('shareModal').classList.add('open') }); document.querySelectorAll('.brief').forEach(b => b.onclick = () => { const r = repos.find(x => x.html_url === b.dataset.url); $('briefText').textContent = explain(r); $('briefModal').classList.add('open') }); document.querySelectorAll('.project').forEach(el => { const url = el.querySelector('.share')?.dataset.url; if (url && !history.includes(url)) { el.querySelector('.repo-link')?.addEventListener('click', () => { history = [url, ...history.filter(x => x !== url)].slice(0, 20); localStorage.scoutHistory = JSON.stringify(history) }) } }) }
+    function syncSaved() { const n = JSON.parse(localStorage.savedRepos || '[]').length; $('savedCount').hidden = !n; $('savedCount').textContent = n }
+    async function load() { const btn = $('refresh'); btn.classList.add('loading'); btn.disabled = true; try { const since = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10), q = interests.length ? interests.flatMap(x => map[x] || []).slice(0, 3).map(x => 'topic:' + x).join('+') : 'created:>=' + since; const res = await fetch('https://api.github.com/search/repositories?q=' + encodeURIComponent(q) + '&sort=stars&order=desc&per_page=20'); if (!res.ok) throw Error(); repos = (await res.json()).items || DEMO; $('sourceLabel').textContent = 'GitHub Public API'; $('updated').textContent = 'обновлено сейчас' } catch (e) { repos = DEMO; $('sourceLabel').textContent = 'офлайн-подборка'; $('updated').textContent = 'демо-данные'; note('GITHUB НЕ ОТВЕТИЛ · ДЕМО') } finally { btn.classList.remove('loading'); btn.disabled = false; render() } }
+    $('search').oninput = () => render(); $('refresh').onclick = load; document.querySelectorAll('.filter').forEach(b => b.onclick = () => { document.querySelectorAll('.filter').forEach(x => x.classList.remove('active')); b.classList.add('active'); active = b.dataset.filter; render() });
+    function open(id) { $(id).classList.add('open') } function close(id) { $(id).classList.remove('open') } document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => close(b.dataset.close)); document.querySelectorAll('.modal').forEach(m => m.onclick = e => { if (e.target === m) m.classList.remove('open') }); $('profile').onclick = () => open('profileModal'); $('profileTab').onclick = () => open('profileModal'); $('topicsBtn').onclick = () => { renderTopics(); close('profileModal'); open('topicsModal') }; function renderTopics() { $('topics').innerHTML = Object.keys(map).map(x => `<button class="chip ${interests.includes(x) ? 'on' : ''}" data-x="${x}">${x.toUpperCase()}</button>`).join(''); $('topics').querySelectorAll('[data-x]').forEach(b => b.onclick = () => b.classList.toggle('on')) } $('saveTopics').onclick = () => { interests = [...$('topics').querySelectorAll('.chip.on')].map(x => x.dataset.x); localStorage.interests = JSON.stringify(interests); close('topicsModal'); load(); note('ТЕМЫ ОБНОВЛЕНЫ') }; $('sortBtn').onclick = () => { close('profileModal'); open('sortModal') }; document.querySelectorAll('[data-sort]').forEach(b => b.onclick = () => { sortMode = b.dataset.sort; localStorage.sortMode = sortMode; $('sortSummary').textContent = { fit: 'сначала то, что подходит', fresh: 'сначала свежее', stars: 'сначала популярное' }[sortMode]; close('sortModal'); render() }); $('resetBtn').onclick = () => { localStorage.clear(); location.reload() };
+    $('savedTab').onclick = () => { const s = JSON.parse(localStorage.savedRepos || '[]'); $('savedInfo').textContent = s.length ? `Сохранено проектов: ${s.length}. Можно показать их отдельной лентой.` : 'Пока пусто. Нажимай ♡ на карточках.'; open('savedModal') }; $('showSaved').onclick = () => { const s = JSON.parse(localStorage.savedRepos || '[]'); visible = repos.filter(r => s.includes(r.html_url)); $('feedTitle').textContent = 'Сохранённые'; $('feed').innerHTML = visible.length ? visible.map(card).join('') : `<div class="empty"><b>Пока пусто</b>Сохраняй хорошие находки сердцем.</div>`; bind(); close('savedModal') }; $('historyTab').onclick = () => { const names = history.map(u => repos.find(r => r.html_url === u)?.name).filter(Boolean); $('historyInfo').textContent = names.length ? names.join(' · ') : 'История пока пустая.'; open('historyModal') }; $('clearHistory').onclick = () => { history = []; localStorage.scoutHistory = '[]'; close('historyModal'); note('ИСТОРИЯ ОЧИЩЕНА') }; $('copyLink').onclick = async () => { try { await navigator.clipboard.writeText(shareItem.url); note('ССЫЛКА СКОПИРОВАНА') } catch (e) { note(shareItem.url) } }; $('tgShare').onclick = () => location.href = 'https://t.me/share/url?url=' + encodeURIComponent(shareItem.url) + '&text=' + encodeURIComponent(shareItem.name); $('nativeShare').onclick = () => navigator.share ? navigator.share({ title: shareItem.name, url: shareItem.url }) : $('copyLink').click();
+    $('discoverBtn').onclick = () => { const r = visible[Math.floor(Math.random() * visible.length)] || DEMO[0]; $('search').value = ''; visible = [r]; $('feedTitle').textContent = 'Одна находка'; $('count').textContent = '01 PROJECT'; $('feed').innerHTML = card(r, 0); bind(); note('НАШЁЛ ОДНУ, НО ХОРОШУЮ') }; $('stackBtn').onclick = () => { active = 'tools'; document.querySelectorAll('.filter').forEach(x => x.classList.toggle('active', x.dataset.filter === 'tools')); render(); note('ПОДОБРАЛ ПОД DEV TOOLS') }; $('briefBtn').onclick = () => { const r = visible[0] || repos[0]; if (!r) return; $('briefText').textContent = explain(r); open('briefModal') }; $('radarTab').onclick = () => { $('feedTitle').textContent = 'Подобрано для тебя'; render() };
+    /* Private Studio: hidden from ordinary users. The client gate is UX only; production must verify initData server-side. */
+    async function ownerEntitlement() { const u = tg?.initDataUnsafe?.user; if (!u) return false; try { const res = await fetch('/api/entitlement', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ initData: tg.initData }) }); if (res.ok) { const data = await res.json(); return data?.features?.privateSlideStudio === true } } catch (e) { } return u.id === 6941538961 }
+    async function mountPrivateStudio() { if (!(await ownerEntitlement())) return; const el = document.createElement('div'); el.id = 'privateStudio'; el.innerHTML = '<div style="position:fixed;inset:0;background:oklch(12% .025 145);z-index:90;color:oklch(93% .025 145);display:grid;place-items:center;font:14px IBM Plex Mono">PRIVATE SLIDE STUDIO · OWNER MODE <button id="privateClose" style="margin-left:12px;padding:10px;background:oklch(82% .2 140);border:0">CLOSE</button></div>'; document.body.appendChild(el); $('privateClose').onclick = () => el.remove(); window.openPrivateStudio = () => open('privateStudio') }
+    (async () => { const u = tg?.initDataUnsafe?.user; if (u) { $('authState').textContent = 'TELEGRAM // AUTH'; $('userAvatar').textContent = (u.first_name || 'AU').slice(0, 2).toUpperCase(); tg.ready(); tg.expand() } $('sortSummary').textContent = { fit: 'сначала то, что подходит', fresh: 'сначала свежее', stars: 'сначала популярное' }[sortMode]; if (!localStorage.onboard) { interests = ['ai', 'tools']; localStorage.interests = JSON.stringify(interests) } await load(); await mountPrivateStudio() })();
+
+
+    /* ===== CHANNEL SUBSCRIPTION GATE ===== */
+    const CHANNEL_USERNAME = 'codrng'; // @codrng
+    const BOT_TOKEN_HASH = null; // Set server-side in production
+    
+    async function checkSubscription() {
+      const u = tg?.initDataUnsafe?.user;
+      if (!u) {
+        // Not in Telegram — skip gate for dev/demo
+        return true;
+      }
+      // Check via bot API (requires server endpoint)
+      try {
+        const res = await fetch('/api/check-subscription', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ user_id: u.id, channel: CHANNEL_USERNAME, initData: tg.initData })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          return data.subscribed === true;
+        }
+      } catch (e) {}
+      // Fallback: check localStorage (user clicked "check" and was verified before)
+      return localStorage.getItem('scout_sub_verified') === 'true';
+    }
+
+    async function initSubGate() {
+      const gate = $('subGate');
+      if (!gate) return;
+      
+      const isSubscribed = await checkSubscription();
+      if (isSubscribed) {
+        localStorage.setItem('scout_sub_verified', 'true');
+        gate.classList.add('exit');
+        setTimeout(() => gate.remove(), 600);
+        return;
+      }
+
+      // Show gate — hide boot and app
+      const bootEl = $('boot');
+      if (bootEl) bootEl.style.display = 'none';
+      document.body.classList.remove('app-booting');
+
+      $('subCheck').onclick = async () => {
+        $('subStatus').textContent = 'ПРОВЕРЯЮ...';
+        $('subStatus').style.color = 'var(--muted)';
+        
+        // Small delay for UX
+        await new Promise(r => setTimeout(r, 800));
+        
+        const ok = await checkSubscription();
+        if (ok) {
+          localStorage.setItem('scout_sub_verified', 'true');
+          $('subStatus').textContent = '✓ ПОДПИСКА ПОДТВЕРЖДЕНА';
+          $('subStatus').style.color = 'var(--green)';
+          tg?.HapticFeedback?.notificationOccurred?.('success');
+          setTimeout(() => {
+            gate.classList.add('exit');
+            setTimeout(() => {
+              gate.remove();
+              // Now start boot sequence
+              if (window.__bootFinish && $('boot')) {
+                document.body.classList.add('app-booting');
+                $('boot').style.display = '';
+              } else {
+                document.body.classList.add('app-booted');
+              }
+            }, 600);
+          }, 700);
+        } else {
+          $('subStatus').textContent = 'ПОДПИСКА НЕ НАЙДЕНА · ПОДПИШИСЬ И ПОПРОБУЙ СНОВА';
+          $('subStatus').style.color = 'var(--pink)';
+          tg?.HapticFeedback?.notificationOccurred?.('error');
+        }
+      };
+
+      // Open channel link via Telegram
+      $('subLink').onclick = (e) => {
+        if (tg) {
+          e.preventDefault();
+          tg.openTelegramLink('https://t.me/' + CHANNEL_USERNAME);
+        }
+      };
+    }
+
+    /* ===== HACKER MODE ===== */
+    let hackerMode = false;
+    let konamiBuffer = [];
+    const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    const HACKER_CMDS = {
+      help: () => [
+        {t:'ДОСТУПНЫЕ КОМАНДЫ:', s:'success'},
+        {t:'  help          — список команд'},
+        {t:'  status        — статус системы'},
+        {t:'  matrix        — включить матрицу'},
+        {t:'  scan          — просканировать сеть'},
+        {t:'  decrypt       — расшифровать данные'},
+        {t:'  hack <target> — взломать цель'},
+        {t:'  nmap          — сканировать порты'},
+        {t:'  whoami        — кто ты?'},
+        {t:'  clear         — очистить терминал'},
+        {t:'  exit          — выйти из хакер-режима'},
+        {t:'  easter        — 🥚'},
+      ],
+      status: () => {
+        const u = tg?.initDataUnsafe?.user;
+        return [
+          {t:'SYSTEM STATUS REPORT', s:'success'},
+          {t:'  user:     ' + (u ? u.first_name + ' [TG:' + u.id + ']' : 'ANONYMOUS')},
+          {t:'  session:  ENCRYPTED AES-256'},
+          {t:'  uptime:   ' + Math.floor(performance.now()/1000) + 's'},
+          {t:'  repos:    ' + repos.length + ' loaded'},
+          {t:'  saved:    ' + JSON.parse(localStorage.savedRepos||'[]').length},
+          {t:'  mode:     HACKER // ELEVATED'},
+          {t:'  threat:   LOW', s:'success'},
+        ];
+      },
+      matrix: () => {
+        startMatrix();
+        return [{t:'MATRIX RAIN ACTIVATED', s:'success'}];
+      },
+      scan: () => {
+        const targets = ['github.com','api.github.com','telegram.org','t.me','scout.internal'];
+        return [
+          {t:'SCANNING NETWORK...', s:'success'},
+          ...targets.map(t => ({t:'  ' + t + ' :: ' + (Math.random()>.3?'REACHABLE ['+Math.floor(Math.random()*50+10)+'ms]':'TIMEOUT'), s:Math.random()>.3?'':'error'})),
+          {t:'SCAN COMPLETE: ' + targets.length + ' hosts', s:'success'},
+        ];
+      },
+      decrypt: () => {
+        const phrases = ['подписка на канал = сила','код — это поэзия на языке машин','scout видит то, что скрыто','ты уже внутри системы','there is no spoon'];
+        const p = phrases[Math.floor(Math.random()*phrases.length)];
+        return [
+          {t:'DECRYPTING...'},
+          {t:'  key:    RSA-4096'},
+          {t:'  cipher: AES-256-GCM'},
+          {t:'  result: "' + p + '"', s:'success'},
+        ];
+      },
+      nmap: () => [
+        {t:'Starting Nmap 7.94 ( https://nmap.org )', s:'success'},
+        {t:'PORT     STATE  SERVICE'},
+        {t:'22/tcp   open   ssh'},
+        {t:'80/tcp   open   http'},
+        {t:'443/tcp  open   https'},
+        {t:'8080/tcp closed http-proxy'},
+        {t:'3000/tcp open   scout-api'},
+        {t:'Nmap done: 1 IP scanned in 2.34s', s:'success'},
+      ],
+      whoami: () => {
+        const u = tg?.initDataUnsafe?.user;
+        return [{t: u ? 'root@scout (' + u.first_name + ')' : 'anonymous@scout', s:'success'}];
+      },
+      easter: () => [
+        {t:'🥚 EASTER EGG FOUND!', s:'success'},
+        {t:'  Поздравляю, ты нашёл пасхалку!'},
+        {t:'  Попробуй ещё: hack github, или набери Konami-код'},
+        {t:'  ↑↑↓↓←→←→BA на главном экране', s:'success'},
+      ],
+      clear: () => 'CLEAR',
+      exit: () => 'EXIT',
+    };
+
+    function hackerLine(text, state='') {
+      return '<div class="h-line ' + state + '"><i>' + (state==='success'?'✓':state==='error'?'✗':'❯') + '</i>' + text + '</div>';
+    }
+
+    function addHackerOutput(lines) {
+      const body = $('hackerBody');
+      lines.forEach(l => {
+        body.innerHTML += hackerLine(l.t, l.s || '');
+      });
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function processHackerCmd(cmd) {
+      const parts = cmd.trim().toLowerCase().split(/\s+/);
+      const name = parts[0];
+      const arg = parts.slice(1).join(' ');
+      
+      // Add the command echo
+      $('hackerBody').innerHTML += hackerLine('$ ' + cmd, 'success');
+
+      if (name === 'hack') {
+        const target = arg || 'unknown';
+        const lines = [
+          {t:'INITIATING HACK: ' + target},
+          {t:'  [■□□□□□□□□□] 10%'},
+          {t:'  [■■■□□□□□□□] 30%'},
+          {t:'  [■■■■■□□□□□] 50%'},
+          {t:'  [■■■■■■■□□□] 70%'},
+          {t:'  [■■■■■■■■■■] 100%'},
+        ];
+        if (target === 'github') {
+          lines.push({t:'ACCESS GRANTED · Welcome to the mainframe', s:'success'});
+          lines.push({t:'  jk, GitHub слишком хорошо защищён 😎', s:'error'});
+        } else if (target === 'nasa' || target === 'pentagon') {
+          lines.push({t:'NICE TRY · FBI уже в пути 🚔', s:'error'});
+        } else {
+          lines.push({t:'HACK COMPLETE · ' + target + ' compromised', s:'success'});
+        }
+        addHackerOutput(lines);
+        return;
+      }
+
+      if (HACKER_CMDS[name]) {
+        const result = HACKER_CMDS[name]();
+        if (result === 'CLEAR') {
+          $('hackerBody').innerHTML = '';
+          return;
+        }
+        if (result === 'EXIT') {
+          toggleHackerMode();
+          return;
+        }
+        addHackerOutput(result);
+      } else {
+        addHackerOutput([{t:'command not found: ' + name + ' · введи help', s:'error'}]);
+      }
+    }
+
+    function startMatrix() {
+      const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
+      let count = 0;
+      const iv = setInterval(() => {
+        if (count++ > 60 || !hackerMode) { clearInterval(iv); return; }
+        const el = document.createElement('span');
+        el.className = 'matrix-char';
+        el.textContent = chars[Math.floor(Math.random()*chars.length)];
+        el.style.left = Math.random() * 100 + 'vw';
+        el.style.top = '-20px';
+        el.style.fontSize = (10 + Math.random() * 14) + 'px';
+        el.style.animationDuration = (2 + Math.random() * 3) + 's';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 5000);
+      }, 80);
+    }
+
+    function toggleHackerMode() {
+      hackerMode = !hackerMode;
+      document.body.classList.toggle('hacker-active', hackerMode);
+      const term = $('hackerTerminal');
+      
+      if (hackerMode) {
+        term.classList.add('open');
+        $('hackerBody').innerHTML = '';
+        addHackerOutput([
+          {t:'HACKER MODE ACTIVATED', s:'success'},
+          {t:'Scout Terminal v2.0 · введи help для списка команд'},
+          {t:''},
+        ]);
+        $('hackerInput').focus();
+        tg?.HapticFeedback?.impactOccurred?.('heavy');
+        note('🔓 HACKER MODE · ON');
+      } else {
+        term.classList.remove('open');
+        // Remove matrix chars
+        document.querySelectorAll('.matrix-char').forEach(e => e.remove());
+        tg?.HapticFeedback?.impactOccurred?.('light');
+        note('HACKER MODE · OFF');
+      }
+    }
+
+    // Konami code listener
+    document.addEventListener('keydown', (e) => {
+      konamiBuffer.push(e.key);
+      if (konamiBuffer.length > KONAMI.length) konamiBuffer.shift();
+      if (konamiBuffer.join(',') === KONAMI.join(',')) {
+        konamiBuffer = [];
+        toggleHackerMode();
+      }
+    });
+
+    // Hacker terminal input handler
+    $('hackerInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const val = e.target.value.trim();
+        if (val) processHackerCmd(val);
+        e.target.value = '';
+      }
+      if (e.key === 'Escape') {
+        toggleHackerMode();
+      }
+    });
+    $('hackerClose').onclick = () => toggleHackerMode();
+
+    // Secret: triple-tap on brand logo activates hacker mode (mobile)
+    let tapCount = 0, tapTimer = null;
+    document.querySelector('.brand')?.addEventListener('click', () => {
+      tapCount++;
+      clearTimeout(tapTimer);
+      tapTimer = setTimeout(() => { tapCount = 0; }, 600);
+      if (tapCount >= 5) {
+        tapCount = 0;
+        toggleHackerMode();
+      }
+    });
+
+    // Init subscription gate before everything
+    initSubGate();
+
+  </script>
+</body>
+
+</html>
