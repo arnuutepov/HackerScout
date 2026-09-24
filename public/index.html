@@ -1898,6 +1898,7 @@
       var fmt = function (n) { n = n || 0; return n >= 1000 ? (n / 1000).toFixed(1).replace('.0', '') + 'K' : String(n); };
       var SESSION_START = Date.now();
       var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+      var WEB_DEMO = !tg;
       var haptic = function (k) { try { tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred(k || 'light'); } catch (e) { } };
 
       /* ===== БАГ 7: тема Telegram + кнопка «Назад» ===== */
@@ -2122,9 +2123,14 @@
       function finishLoad() {
         var btn = $('refresh'); btn.classList.remove('loading'); btn.disabled = false;
         if (lastFetch.demo) {
-          $('sourceLabel').textContent = 'офлайн-подборка';
-          $('updated').innerHTML = '<span class="warn">' + (lastFetch.reason === 'rate_limited' ? 'GitHub лимит, показываю демо' : 'нет связи с сервером, демо-данные') + '</span>';
-          note(lastFetch.reason === 'rate_limited' ? 'ЛИМИТ GITHUB · ДЕМО' : 'СЕРВЕР НЕ ОТВЕТИЛ · ДЕМО');
+          if (WEB_DEMO) {
+            $('sourceLabel').textContent = 'Scout Demo';
+            $('updated').textContent = 'режим предпросмотра';
+          } else {
+            $('sourceLabel').textContent = 'офлайн-подборка';
+            $('updated').innerHTML = '<span class="warn">' + (lastFetch.reason === 'rate_limited' ? 'GitHub лимит, показываю демо' : 'нет связи с сервером, демо-данные') + '</span>';
+            note(lastFetch.reason === 'rate_limited' ? 'ЛИМИТ GITHUB · ДЕМО' : 'СЕРВЕР НЕ ОТВЕТИЛ · ДЕМО');
+          }
         } else {
           $('sourceLabel').textContent = lastFetch.cached ? 'Scout API · кэш' : 'Scout API · GitHub';
           $('updated').textContent = (lastFetch.stale ? 'из кэша, ' : 'обновлено ') + clockStr(new Date(lastFetch.at)).slice(0, 5);
@@ -2519,9 +2525,9 @@
         document.body.classList.add('app-booting');
         var boot = $('boot'), bar = $('bar'), pct = $('pct'), bootStatus = $('bootStatus'), terminal = $('terminal'), typed = $('typed');
         var steps = [
-          ['handshake', 'проверяю подпись Telegram'],
-          ['identity', 'сверяю подписку на канал'],
-          ['signal', 'тяну ленту через Scout API'],
+          ['handshake', WEB_DEMO ? 'открываю web-сессию' : 'проверяю подпись Telegram'],
+          ['identity', WEB_DEMO ? 'запускаю режим предпросмотра' : 'сверяю подписку на канал'],
+          ['signal', WEB_DEMO ? 'загружаю стартовую подборку' : 'тяну ленту через Scout API'],
           ['ranking', 'ранжирую под твой вкус'],
           ['ready', 'радар готов']
         ];
@@ -2570,9 +2576,11 @@
           $('authState').textContent = 'TELEGRAM // AUTH';
           $('userAvatar').textContent = (u.first_name || 'AU').slice(0, 2).toUpperCase();
         } else {
-          $('authState').textContent = SESSION && SESSION.dev ? 'DEV MODE' : 'GUEST';
+          $('authState').textContent = WEB_DEMO ? 'WEB DEMO' : (SESSION && SESSION.dev ? 'DEV MODE' : 'GUEST');
         }
-        $('sessionNote').textContent = SESSION && SESSION.dev
+        $('sessionNote').textContent = WEB_DEMO
+          ? 'Режим предпросмотра: интерфейс и локальные функции доступны в браузере. Открой Scout через Telegram для живой ленты и проверки подписки.'
+          : SESSION && SESSION.dev
           ? 'DEV-режим: сервер запущен без токена бота, гейт подписки отключён.'
           : 'Подписка и права проверены на сервере. Сессия живёт час и продлевается при перезапуске.';
         if (SESSION && SESSION.features && SESSION.features.privateStudio) {
@@ -2590,6 +2598,12 @@
         if (tg) { try { tg.ready(); tg.expand(); } catch (e) { } }
         if (!localStorage.interests) { interests = ['ai', 'tools']; localStorage.interests = JSON.stringify(interests); }
         $('boot').style.display = 'none';
+        if (WEB_DEMO) {
+          SESSION = { dev: true, subscribed: true, user: null, features: { privateStudio: false }, token: null };
+          $('boot').style.display = '';
+          startApp();
+          return;
+        }
         requestSession().then(function (s) {
           SESSION = s;
           if (s.subscribed) { $('boot').style.display = ''; startApp(); }
