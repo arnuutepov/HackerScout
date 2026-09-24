@@ -29,6 +29,9 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
 const ALLOW_ORIGIN = process.env.ALLOW_ORIGIN || '';
 const PORT = Number(process.env.PORT || 3000);
+// Временный QA-режим: авторизация Telegram остаётся обязательной,
+// но проверка подписки на канал отключена до явного выключения флага.
+const SKIP_SUBSCRIPTION = process.env.SKIP_SUBSCRIPTION !== 'false';
 const DEV = !BOT_TOKEN;
 
 const SESSION_TTL = 60 * 60;          // 1 час
@@ -260,7 +263,7 @@ async function buildSession(initData) {
   const user = validateInitData(initData);
   if (!user) return { error: 'bad_init_data' };
 
-  const subscribed = await isSubscribed(user.id);
+  const subscribed = SKIP_SUBSCRIPTION || await isSubscribed(user.id);
   const owner = OWNER_ID > 0 && user.id === OWNER_ID;
 
   return {
@@ -297,7 +300,13 @@ const server = http.createServer(async (req, res) => {
 
   /* ---- health ---- */
   if (route === '/api/health') {
-    return send(res, 200, { ok: true, dev: DEV, channel: CHANNEL, github: GITHUB_TOKEN ? 'token' : 'anonymous' });
+    return send(res, 200, {
+      ok: true,
+      dev: DEV,
+      channel: CHANNEL,
+      github: GITHUB_TOKEN ? 'token' : 'anonymous',
+      subscription_check: SKIP_SUBSCRIPTION ? 'skipped' : 'enabled'
+    });
   }
 
   /* ---- сессия: подпись initData + проверка подписки одним запросом ---- */
