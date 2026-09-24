@@ -1645,9 +1645,8 @@
       <div class="sub-gate-icon"><span>⌁</span></div>
       <h2>Подпишись на<br><em>канал Scout</em></h2>
       <p id="gateText">Чтобы пользоваться радаром, нужно быть подписанным на канал. Это бесплатно.</p>
-      <a class="sub-gate-btn" href="https://t.me/scoutgit" target="_blank" rel="noopener" id="subLink">ПОДПИСАТЬСЯ НА
-        КАНАЛ ↗</a>
-      <button class="sub-gate-check" id="subCheck">Я УЖЕ ПОДПИСАН · ПРОВЕРИТЬ</button>
+      <a class="sub-gate-btn" href="/github-scout-private-studio.html" id="subLink">ОТКРЫТЬ PRIVATE STUDIO ↗</a>
+      <button class="sub-gate-check" id="subCheck">ВОЙТИ В PRIVATE STUDIO</button>
       <div class="sub-gate-status" id="subStatus"></div>
       <div class="sub-gate-note">GITHUB SCOUT · PRIVATE RADAR · v3.0</div>
     </div>
@@ -1898,7 +1897,7 @@
       var fmt = function (n) { n = n || 0; return n >= 1000 ? (n / 1000).toFixed(1).replace('.0', '') + 'K' : String(n); };
       var SESSION_START = Date.now();
       var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-      var WEB_DEMO = !tg;
+      var WEB_DEMO = false;
       var haptic = function (k) { try { tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred(k || 'light'); } catch (e) { } };
 
       /* ===== БАГ 7: тема Telegram + кнопка «Назад» ===== */
@@ -2508,7 +2507,7 @@
             $('subStatus').textContent = '✓ ПОДПИСКА ПОДТВЕРЖДЕНА';
             $('subStatus').style.color = 'var(--green)';
             try { tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success'); } catch (e) { }
-            setTimeout(function () { hideGate(); startApp(); }, 700);
+            setTimeout(function () { window.location.href = '/github-scout-private-studio.html'; }, 700);
           } else {
             $('subStatus').textContent = s.error === 'offline' ? 'СЕРВЕР НЕ ОТВЕЧАЕТ' : 'ПОДПИСКА НЕ НАЙДЕНА · ПОДПИШИСЬ И ПОПРОБУЙ СНОВА';
             $('subStatus').style.color = 'var(--pink)';
@@ -2516,7 +2515,7 @@
         });
       });
       on('subLink', 'click', function (e) {
-        if (tg && tg.openTelegramLink) { e.preventDefault(); tg.openTelegramLink('https://t.me/scoutgit'); }
+        if (tg && tg.openLink) { e.preventDefault(); tg.openLink('/github-scout-private-studio.html'); }
       });
 
       /* ===== boot ===== */
@@ -2598,12 +2597,6 @@
         if (tg) { try { tg.ready(); tg.expand(); } catch (e) { } }
         if (!localStorage.interests) { interests = ['ai', 'tools']; localStorage.interests = JSON.stringify(interests); }
         $('boot').style.display = 'none';
-        if (WEB_DEMO) {
-          SESSION = { dev: true, subscribed: true, user: null, features: { privateStudio: false }, token: null };
-          $('boot').style.display = '';
-          startApp();
-          return;
-        }
         requestSession().then(function (s) {
           SESSION = s;
           if (s.subscribed) { $('boot').style.display = ''; startApp(); }
